@@ -50,7 +50,9 @@ export default function Projects() {
             </div>
             <div className="pt-6">
                 <Input placeholder="Search Projects" />
-                <Table data={data} columns={columns} />
+                <div className="pt-2">
+                    <Table data={data} columns={columns} />
+                </div>
             </div>
         </BaseLayout>
     </>)

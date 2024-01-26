@@ -2,8 +2,9 @@ import { Prisma } from '@prisma/client';
 import NextError from 'next/error';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useState } from 'react';
 import Button from '~/components/button';
+import AddMember from '~/components/modals/addMember';
 import PageHead from '~/components/pageHead';
 import Table from '~/components/table';
 import { UserWithAvatar } from '~/components/userAvatar';
@@ -32,7 +33,7 @@ type MembersTableProps = {
 // Components
 const MembersTable: FunctionComponent<MembersTableProps> = ({ members = [] }) => {
     const columns = [
-        { name: "Assignee", cell: (row: ProjectMemberType) => <UserWithAvatar name={row.user.name} userId={row.user.id} /> },
+        { name: "Assignee", cell: (row: ProjectMemberType) => <div><UserWithAvatar name={row.user.name} userId={row.user.id} /></div> },
         { name: "Tasks", cell: (row: ProjectMemberType) => row.user.assignedTasks.length },
     ]
 
@@ -43,6 +44,13 @@ const MembersTable: FunctionComponent<MembersTableProps> = ({ members = [] }) =>
 
 function ProjectDetails(props: { project: ProjectByIdOutput, loading: boolean }) {
     const { project } = props;
+
+    const [showAddMemberDialog, setShowAddMemberDialog] = useState(false)
+
+    const hideDialog = () => {
+        setShowAddMemberDialog(false)
+    }
+
     return (
         <>
             <Head>
@@ -70,11 +78,11 @@ function ProjectDetails(props: { project: ProjectByIdOutput, loading: boolean })
                             <MembersTable members={project?.members || []} />
                         </div>
                         <div className='absolute bottom-4 left-4'>
-                            <Button>Add Member</Button>
+                            <Button onClick={() => setShowAddMemberDialog(true)}>Add Member</Button>
                         </div>
                     </div>
                     <div className='relative bg-white p-4 shadow-sm ring-1 ring-gray-200 rounded-md h-40' style={{ width: 400 }}>
-                        <div className='font-medium text-[hsl(280,13.34%,40.04%)] mb-2'>Tasks</div>
+                        <div className='font-medium text-[hsl(280,13.34%,40.04%)] mb-2'>Task Distribution</div>
                         {
                             project?.tasks.map(task => (
                                 <div key={`project-member-${task.id}`}>{task.title}</div>
@@ -91,6 +99,7 @@ function ProjectDetails(props: { project: ProjectByIdOutput, loading: boolean })
                         }
                     </div>
                 </div>
+                {showAddMemberDialog && <AddMember projectId={project?.id} hideDialog={hideDialog} />}
             </BaseLayout>
         </>
 

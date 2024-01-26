@@ -14,6 +14,8 @@ const CreateProject = ({ }) => {
 
     const onSubmit = async () => {
         const res = await mutation.mutate(formData);
+        alert("Created!")
+        // Do somethign here
         console.log(res)
     }
 
