@@ -93,7 +93,7 @@ model User {
 
     assignedTasks Task[]    @relation("taskAssignee")
     createdTasks  Task[]    @relation("taskCreator")
-
+    shade         String    @default("teal")
     projectLead   Project[] 
     projects      ProjectsAndUsers[]
 }
