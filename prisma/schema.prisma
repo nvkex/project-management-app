@@ -23,12 +23,13 @@ model Project {
     updatedAt           DateTime    @updatedAt
     abbreviation        String
 
-    userId              String
+    leadUserId          String
+    lead                User        @relation(fields: [leadUserId], references: [id])
     tasks               Task[] 
     lastCreatedTaskId   Int         @default(1)
     members             ProjectsAndUsers[]
 
-    @@index([userId])
+    @@index([abbreviation])
 }
 
 model Task {
@@ -83,7 +84,7 @@ model Session {
 
 model User {
     id            String    @id @default(cuid())
-    name          String?
+    name          String
     email         String?   @unique
     emailVerified DateTime?
     image         String?
@@ -93,6 +94,7 @@ model User {
     assignedTasks Task[]    @relation("taskAssignee")
     createdTasks  Task[]    @relation("taskCreator")
 
+    projectLead   Project[] 
     projects      ProjectsAndUsers[]
 }
 

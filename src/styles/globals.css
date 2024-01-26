@@ -6,8 +6,7 @@ html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
 a {
@@ -19,26 +18,6 @@ a {
   box-sizing: border-box;
 }
 
-.sign-in-form{
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.sign-in-form input{
-  display: block;
-  padding: 5px;
-  border: 1px gray solid;
-  border-radius: 3px;
-  margin-top: 15px;
-}
-.sign-in-form h1{
-  font-size: 18px;
-  text-align: center;
-}
-.sign-in-form form{
-  padding: 50px 15px;
-  border: 2px gray solid;
-  border-radius: 3px;
+.custom-container {
+  height: calc(100vh - 57.6px);
 }
