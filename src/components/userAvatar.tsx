@@ -15,7 +15,7 @@ const UserAvatar: FunctionComponent<UserAvatarProps> = ({ name }) => {
         .map(s => s[0])
         .reduce((a, b = "") => a + b)
     return (
-        <div className="rounded-full bg-teal-700 text-white" style={{ padding: "0px 6px 2px 6px" }}><small>{initials}</small></div>
+        <div className="rounded-full bg-teal-700 text-white flex justify-center align-middle" style={{ padding: "2px", width: "25px", height: "25px" }}><small>{initials}</small></div>
     )
 }
 

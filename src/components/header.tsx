@@ -1,4 +1,12 @@
+import { signOut } from "next-auth/react";
+
 export default function Header() {
+    
+    const onLogout = () => {
+        signOut()
+        window.location.href = '/'
+    }
+
     return (
         <header className="bg-white border-b-2">
             <nav className="mx-auto flex max-w-7xl items-center justify-between p-3 lg:px-5" aria-label="Global">
@@ -22,7 +30,7 @@ export default function Header() {
                     <a href="/preferences" className="text-sm font-semibold leading-6 text-[hsl(280,13.34%,24.04%)] hover:text-teal-700">Preferences</a>
                 </div>
                 <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-                    <a href="#" className="text-sm font-semibold leading-6 text-[hsl(280,13.34%,24.04%)] hover:text-teal-700">Log out <span aria-hidden="true">&rarr;</span></a>
+                    <a href="#" onClick={onLogout} className="text-sm font-semibold leading-6 text-[hsl(280,13.34%,24.04%)] hover:text-teal-700">Log out <span aria-hidden="true">&rarr;</span></a>
                 </div>
             </nav>
             <div className="lg:hidden" role="dialog" aria-modal="true">
