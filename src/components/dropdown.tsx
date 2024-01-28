@@ -8,36 +8,45 @@ export type DropdownOptionsType = {
     [key: string]: any
 }
 
-type DropdownProps = {
+type SingleDropdownProps = {
     options: Array<DropdownOptionsType>,
     onSelect: (data: DropdownOptionsType) => void,
-
-    selected?: boolean extends DropdownProps['multiple'] ? DropdownOptionsType | null : Array<DropdownOptionsType>,
+    selected?: DropdownOptionsType | null,
     selectedLabel: (data: DropdownOptionsType | null | undefined) => string | React.ReactNode,
     placeholder?: string,
-    multiple?: boolean
+    multiple?: false
 }
+
+type MultiDropdownProps = {
+    options: Array<DropdownOptionsType>,
+    onSelect: (data: DropdownOptionsType[]) => void,
+    selected?: DropdownOptionsType[] | null,
+    selectedLabel: (data: DropdownOptionsType | null | undefined) => string | React.ReactNode,
+    placeholder?: string,
+    multiple?: true
+}
+
+type DropdownProps = SingleDropdownProps | MultiDropdownProps
 
 const Dropdown: FunctionComponent<DropdownProps> = ({ multiple = false, options, selected, selectedLabel, placeholder = "", onSelect }) => {
 
+    const noOptions = options.length == 0
+
     const getLabels = () => {
-        if (!selected)
+        if (noOptions)
+            return <span className='text-gray-400'>No Options Available</span>
+        if (!selected || (multiple && selected?.length == 0))
             return placeholder
 
-        let labels = []
-        if (multiple) {
-            selected.forEach((s: DropdownOptionsType) => {
-                labels.push(selectedLabel(s))
-            })
-        }
-        else
-            labels.push(selectedLabel(selected))
+        const labels = multiple
+            ? selected.map((s: DropdownOptionsType) => selectedLabel(s))
+            : [selectedLabel(selected as DropdownOptionsType)];
         return labels
     }
 
     return (
         <div className="relative">
-            <Listbox value={selected} onChange={onSelect} multiple={multiple}>
+            <Listbox value={selected} onChange={onSelect} multiple={multiple} disabled={noOptions}>
                 <div className="relative mt-1">
                     <Listbox.Button className="relative w-full px-4 cursor-default rounded-md bg-gray-50 py-2 pl-3 pr-10 text-[hsl(280,13.34%,24.04%)] text-left focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300">
                         <span className="block truncate">{getLabels()}</span>
