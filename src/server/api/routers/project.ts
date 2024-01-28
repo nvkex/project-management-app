@@ -17,13 +17,18 @@ export const projectRouter = createTRPCRouter({
                 }
             });
         }),
+    // split this
     getByAbbrv: protectedProcedure
         .input(z.object({ abbrv: z.string() }))
         .query(({ ctx, input }) => {
             return ctx.db.project.findFirst({
                 where: { abbreviation: input.abbrv },
                 include: {
-                    tasks: true,
+                    tasks: {
+                        include: {
+                            assignee: true
+                        }
+                    },
                     lead: true,
                     members: {
                         include: {

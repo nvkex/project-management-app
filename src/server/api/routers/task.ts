@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { z } from "zod";
 
 import {
@@ -25,7 +26,14 @@ export const taskRouter = createTRPCRouter({
             });
         }),
     create: protectedProcedure
-        .input(z.object({ title: z.string(), description: z.string(), projectId: z.string() }))
+        .input(z.object({
+            title: z.string(),
+            description: z.string(),
+            projectId: z.string(),
+            assigneeId: z.string().nullable(),
+            status: z.string().nullable(),
+            priority: z.string().nullable(),
+        }))
         .mutation(async ({ ctx, input }) => {
             // Fetch lastCreatedTaskId and abbreviation from the associated project
             const projectInfo = await ctx.db.project.findFirst({
@@ -37,15 +45,24 @@ export const taskRouter = createTRPCRouter({
             if (projectInfo)
                 mergedTicketId = `${projectInfo.abbreviation}-${projectInfo.lastCreatedTaskId + 1}`;
 
+            const payload: Prisma.TaskCreateInput = {
+                title: input.title,
+                description: input.description,
+                assignee: { connect: { id: ctx.session.user.id } },
+                createdBy: { connect: { id: ctx.session.user.id } },
+                project: { connect: { id: input.projectId } },
+                ticketId: mergedTicketId
+            }
+
+            if (input.assigneeId)
+                payload['assignee'] = { connect: { id: input.assigneeId } }
+            if (input.status)
+                payload['status'] = input.status
+            if (input.priority)
+                payload['priority'] = input.priority
+
             return ctx.db.task.create({
-                data: {
-                    title: input.title,
-                    description: input.description,
-                    assignee: { connect: { id: ctx.session.user.id } },
-                    createdBy: { connect: { id: ctx.session.user.id } },
-                    project: { connect: { id: input.projectId } },
-                    ticketId: mergedTicketId
-                },
+                data: payload,
             });
         }),
     updateAssignee: protectedProcedure
