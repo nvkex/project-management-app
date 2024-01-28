@@ -1,49 +1,77 @@
-import Link from "next/link";
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 import Button from "../button";
 import Input from "../input";
 import { api } from "~/utils/api";
+import CustomModal from "./customModal";
+import Dropdown, { DropdownOptionsType } from "../dropdown";
+import { UserWithAvatar } from "../userAvatar";
 
 type AddMemberProps = {
     projectId?: string,
-    hideDialog?: () => void
+    onSuccess?: () => void
+    isOpen: boolean,
+    setIsOpen: (value: boolean) => void
 }
 
-const AddMember: FunctionComponent<AddMemberProps> = ({ projectId = '', hideDialog }) => {
-    const [userId, setUserId] = useState('')
-    const mutation = api.project.addMember.useMutation();
+const AddMember: FunctionComponent<AddMemberProps> = ({ projectId = '', isOpen, setIsOpen, onSuccess = () => { } }) => {
+    const [userEmail, setUserEmail] = useState('')
+    const [addedUserIds, setAddedUserIds] = useState<Array<DropdownOptionsType> | []>([])
+    const [userIdSet, setUserIdSet] = useState(new Set())
 
-    const onSubmit = async () => {
-        const res = await mutation.mutate({ projectId, userId });
-        alert("Added!")
-        console.log(res)
-        hideDialog && hideDialog()
+    const mutation = api.project.addMember.useMutation();
+    const { data: rawUserData = [] } = api.user.getAllUsers.useQuery({ projectId });
+    const userData = rawUserData.map(user => ({ label: user.name, value: user.id }))
+
+    const hideDialog = () => { setIsOpen(false) }
+
+    const clearState = () => {
+        setUserEmail('')
+        setAddedUserIds([])
     }
 
+    const onAddUser = (data: DropdownOptionsType[]) => {
+        const uniqUsers = data.filter(d => {
+            if (userIdSet.has(d.value))
+                return false
+            userIdSet.add(d.value)
+            return true
+        })
+        setAddedUserIds(t => [...t, ...uniqUsers])
+    }
+
+    const onSubmit = async () => {
+        // const res = await mutation.mutate({ projectId, userIds: addedUserIds.map(user => user.value) });
+        alert("Added!")
+        onSuccess && onSuccess()
+        hideDialog()
+    }
+
+    useEffect(() => {
+        if (!isOpen)
+            clearState()
+    }, [isOpen])
+
     return (
-        <div className="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
-            <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-                <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-                    <div className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                        <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                            <div className="sm:flex sm:items-start">
-                                <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
-                                    <h3 className="text-base font-semibold leading-6 text-gray-900" id="modal-title">Add Member</h3>
-                                    <div className="mt-2">
-                                        <Input style={{ width: "100%" }} value={userId} onChange={(e) => setUserId(e.target.value)} placeholder="User ID" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="bg-gray-50 px-4 py-3 gap-2 sm:flex sm:flex-row-reverse sm:px-6">
-                            <Button onClick={onSubmit}>Submit</Button>
-                            <Button onClick={hideDialog}>Cancel</Button>
-                        </div>
-                    </div>
+        <CustomModal title="Add Member" isOpen={isOpen} setIsOpen={setIsOpen}>
+            <div className="mt-2 flex flex-col gap-3">
+                <div className="text-xs text-gray-400">Selected Users:</div>
+                <div className="py-1 px-2 bg-slate-200 rounded-md">
+                    {
+                        addedUserIds.length == 0 && <span className="text-gray-400 px-1">No users selected</span>
+                    }
+                    {
+                        addedUserIds.map(user => (<div className="my-2">
+                            <UserWithAvatar name={user.label || ""} userId={user.value || ""} disableLink />
+                        </div>))
+                    }
                 </div>
+                <Dropdown multiple options={userData} onSelect={onAddUser} selectedLabel={selected => ""} selected={[]} placeholder="Select Users" />
             </div>
-        </div>
+            <div className="mt-6 gap-2 sm:flex sm:flex-row-reverse">
+                <Button onClick={onSubmit} variant="primary">Submit</Button>
+                <Button onClick={hideDialog}>Cancel</Button>
+            </div>
+        </CustomModal>
     )
 }
 

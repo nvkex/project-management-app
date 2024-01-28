@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
 import NextError from 'next/error';
 import Head from 'next/head';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { FunctionComponent, useState } from 'react';
 import Button from '~/components/button';
@@ -47,10 +48,6 @@ function ProjectDetails(props: { project: ProjectByIdOutput, loading: boolean })
 
     const [showAddMemberDialog, setShowAddMemberDialog] = useState(false)
 
-    const hideDialog = () => {
-        setShowAddMemberDialog(false)
-    }
-
     return (
         <>
             <Head>
@@ -81,25 +78,25 @@ function ProjectDetails(props: { project: ProjectByIdOutput, loading: boolean })
                             <Button onClick={() => setShowAddMemberDialog(true)}>Add Member</Button>
                         </div>
                     </div>
-                    <div className='relative bg-white p-4 shadow-sm ring-1 ring-gray-200 rounded-md h-40' style={{ width: 400 }}>
+                    <div className='relative bg-white p-4 shadow-sm ring-1 ring-gray-200 rounded-md h-80' style={{ width: 400 }}>
                         <div className='font-medium text-[hsl(280,13.34%,40.04%)] mb-2'>Task Distribution</div>
-                        {
-                            project?.tasks.map(task => (
-                                <div key={`project-member-${task.id}`}>{task.title}</div>
-                            ))
-                        }
-                        <Button>View Tasks</Button>
+                        <div className="overflow-y-auto overflow-x-hidden my-1" style={{ height: 212 }}>
+                            <MembersTable members={project?.members || []} />
+                        </div>
+                        <div className='absolute bottom-4 left-4'>
+                            <Link href={`/projects/${project?.abbreviation}/tasks`}>
+                                <Button>View Tasks</Button>
+                            </Link>
+                        </div>
                     </div>
-                    <div className='relative bg-white p-4 shadow-sm ring-1 ring-gray-200 rounded-md h-40' style={{ width: 400 }}>
+                    <div className='relative bg-white p-4 shadow-sm ring-1 ring-gray-200 rounded-md h-80' style={{ width: 400 }}>
                         <div className='font-medium text-[hsl(280,13.34%,40.04%)] mb-2'>Priority Breakdown</div>
-                        {
-                            project?.members.map(member => (
-                                <div>{member.user.name}</div>
-                            ))
-                        }
+                        <div className="overflow-y-auto overflow-x-hidden my-1" style={{ height: 212 }}>
+                            <MembersTable members={project?.members || []} />
+                        </div>
                     </div>
                 </div>
-                {showAddMemberDialog && <AddMember projectId={project?.id} hideDialog={hideDialog} />}
+                <AddMember projectId={project?.id} setIsOpen={setShowAddMemberDialog} isOpen={showAddMemberDialog} />
             </BaseLayout>
         </>
 

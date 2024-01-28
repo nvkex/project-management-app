@@ -44,7 +44,7 @@ const CustomModal: FunctionComponent<CustomModalProps> = ({ isOpen, setIsOpen, t
                                 <Dialog.Panel className="w-full max-w-md transform rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                                     <Dialog.Title
                                         as="h3"
-                                        className="text-lg font-medium leading-6 text-gray-900"
+                                        className="text-lg font-medium leading-6 text-[hsl(280,13.34%,24.04%)]"
                                     >
                                         {title}
                                     </Dialog.Title>
