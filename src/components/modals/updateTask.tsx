@@ -25,9 +25,11 @@ type UpdateTaskProps = {
 const UpdateTask: FunctionComponent<UpdateTaskProps> = ({ task, project, isOpen, setIsOpen, onSuccess = () => { } }) => {
     const [title, setTitle] = useState(task ? task.title : null)
     const [description, setDescription] = useState(task ? task.description : null)
-    const [assignee, setAssignee] = useState<DropdownOptionsType | null>(task ? { label: task.assignee?.name || "", value: task.assignee?.id || "" } : null)
-    const [status, setStatus] = useState<DropdownOptionsType | null>(task ? { label: task.status || "", value: task.status || "" } : null)
-    const [priority, setPriority] = useState<DropdownOptionsType | null>(task ? { label: task.priority || "", value: task.priority || "" } : null)
+    const [startDate, setStartDate] = useState<string | null>(null)
+    const [endDate, setEndDate] = useState<string | null>(null)
+    const [assignee, setAssignee] = useState<DropdownOptionsType | null>(null)
+    const [status, setStatus] = useState<DropdownOptionsType | null>(null)
+    const [priority, setPriority] = useState<DropdownOptionsType | null>(null)
 
     const mutation = api.task.updateProperties.useMutation();
 
@@ -44,13 +46,26 @@ const UpdateTask: FunctionComponent<UpdateTaskProps> = ({ task, project, isOpen,
     const onSubmit = async () => {
         if (!project || !task)
             return
+        let _startDate = null
+        let _endDate = null
+        try {
+            if (startDate)
+                _startDate = new Date(startDate)
+            if (endDate)
+                _endDate = new Date(endDate)
+        }
+        catch {
+            alert("Invalid Date")
+        }
 
         const payload: UpdateTaskPayload = {
             title, description,
             taskId: task.id,
             status: status?.value || null,
-            assigneeId: null,
-            priority: priority?.value || null
+            assigneeId: assignee?.value || null,
+            priority: priority?.value || null,
+            startDate: _startDate,
+            endDate: _endDate
         }
 
         if (assignee)
@@ -81,6 +96,8 @@ const UpdateTask: FunctionComponent<UpdateTaskProps> = ({ task, project, isOpen,
             setAssignee({ label: task.assignee?.name || "", value: task.assignee?.id || "" })
             setStatus({ label: task.status || "", value: task.status || "" })
             setPriority({ label: task.priority || "", value: task.priority || "" })
+            setStartDate(task && task.startDate ? task.startDate.toLocaleDateString() : null)
+            setEndDate(task && task.endDate ? task.endDate.toLocaleDateString() : null)
         }
     }, [task])
 
@@ -89,6 +106,8 @@ const UpdateTask: FunctionComponent<UpdateTaskProps> = ({ task, project, isOpen,
             <div className="mt-2 flex flex-col gap-3">
                 <Input style={{ width: "100%" }} value={title || ""} onChange={(e) => setTitle(e.target.value)} placeholder="Title" />
                 <Input style={{ width: "100%" }} value={description || ""} onChange={(e) => setDescription(e.target.value)} placeholder="Description" />
+                <Input style={{ width: "100%" }} value={startDate || ""} onChange={(e) => setStartDate(e.target.value)} placeholder="Start Date: MM/DD/YYYY" />
+                <Input style={{ width: "100%" }} value={endDate || ""} onChange={(e) => setEndDate(e.target.value)} placeholder="End Date: MM/DD/YYYY" />
                 <Dropdown id="update-task-assignee" placeholder="Add Assignee" options={memberList} selected={assignee} onSelect={setAssignee} selectedLabel={selected => <UserWithAvatar name={selected?.label || ""} userId={selected?.value || ""} disableLink />} />
                 <Dropdown id="update-task-status" options={STATUS_LIST_AS_OPTIONS} selected={status} onSelect={setStatus} selectedLabel={selected => <span>Status: <Badge variant={getStatusBadgeVariant()}>{selected?.value}</Badge></span>} />
                 <Dropdown id="update-task-priority" options={PRIORITY_LIST_AS_OPTIONS} selected={priority} onSelect={setPriority} selectedLabel={selected => <span>Priority: <Badge variant={getPriorityBadgeVariant()}>{selected?.value}</Badge></span>} />

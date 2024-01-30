@@ -10,7 +10,7 @@ import { api, type RouterOutputs } from '~/utils/api';
 type UserDetailsOutput = RouterOutputs["user"]["getDetailedUserData"];
 
 
-function UserPreferences(props: { userData: UserDetailsOutput }) {
+function UserProfile(props: { userData: UserDetailsOutput }) {
     const { userData } = props;
 
     return (
@@ -33,7 +33,7 @@ function UserPreferences(props: { userData: UserDetailsOutput }) {
     );
 }
 
-const ProfileEditPage = () => {
+const ProfileViewPage = () => {
     const postQuery = api.user.getDetailedUserData.useQuery();
 
     if (postQuery.error) {
@@ -56,7 +56,7 @@ const ProfileEditPage = () => {
         );
     }
     const { data } = postQuery;
-    return <UserPreferences userData={data} />;
+    return <UserProfile userData={data} />;
 };
 
-export default ProfileEditPage;
+export default ProfileViewPage;

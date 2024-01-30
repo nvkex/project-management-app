@@ -96,9 +96,15 @@ model User {
 
     assignedTasks Task[]    @relation("taskAssignee")
     createdTasks  Task[]    @relation("taskCreator")
-    shade         String    @default("teal")
     projectLead   Project[] 
     projects      ProjectsAndUsers[]
+
+    // Preferences
+    shade         String    @default("teal")
+    jobTitle      String?
+    department    String?
+    organization  String?
+    location      String?
 
     @@index([id])
 }

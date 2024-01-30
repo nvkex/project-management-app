@@ -21,6 +21,7 @@ const UserAvatar: FunctionComponent<UserAvatarProps> = ({ name }) => {
 }
 
 const UserWithAvatar: FunctionComponent<UserWithAvatarProps> = ({ name, userId, disableLink = false }) => {
+
     return (
         <div className="flex gap-1 align-middle">
             <UserAvatar name={name} />
@@ -28,7 +29,7 @@ const UserWithAvatar: FunctionComponent<UserWithAvatarProps> = ({ name, userId, 
                 disableLink ? (
                     <div className="text-[hsl(280,13.34%,24.04%)]">{name}</div>
                 ) : (
-                    <Link href={`/user/${userId}`} className="text-teal-800 hover:text-teal-600 hover:underline">{name}</Link>
+                    <Link href={`/user/${userId}`} onClick={(e) => e.stopPropagation()} className="text-teal-800 hover:text-teal-600 hover:underline">{name}</Link>
                 )
             }
 

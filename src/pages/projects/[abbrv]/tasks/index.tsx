@@ -14,6 +14,7 @@ import { STATUS_ENUM, statusBadgeVariantConfig } from "~/utils/statusConstants";
 import { priorityBadgeVariantConfig } from "~/utils/priorityConstants";
 import { UserWithAvatar } from "~/components/userAvatar";
 import UpdateTask from "~/components/modals/updateTask";
+import { CalendarIcon } from "@heroicons/react/20/solid";
 
 type ProjectByIdOutput = RouterOutputs["project"]["getByAbbrv"];
 
@@ -47,6 +48,24 @@ const TaskList: FunctionComponent<TaskListProps> = ({ tasks, status, onTaskClick
                             <div><Badge>{`${task.ticketId}`}</Badge></div>
                             <div><Badge variant={priorityBadgeVariantConfig[task.priority]}>{task.priority}</Badge></div>
                         </div>
+                        <div className="flex justify-between my-2">
+                            {
+                                task.startDate && <Badge asDiv>
+                                    <div className="flex align-middle gap-1">
+                                        <CalendarIcon height={15} width={15} />
+                                        <div>{`${task.startDate.toLocaleDateString()}`}</div>
+                                    </div>
+                                </Badge>
+                            }
+                            {
+                                task.endDate && <Badge asDiv>
+                                <div className="flex align-middle gap-1">
+                                    <CalendarIcon height={15} width={15} />
+                                    <div>{`${task.endDate.toLocaleDateString()}`}</div>
+                                </div>
+                            </Badge>
+                            }
+                        </div>
                         <div className="my-2">
                             {
                                 task.assignee && <UserWithAvatar name={task.assignee.name} userId={task.assignee.id} />
@@ -62,9 +81,9 @@ const TaskList: FunctionComponent<TaskListProps> = ({ tasks, status, onTaskClick
 const TaskListColumn: FunctionComponent<TaskListColumnType> = ({ data, taskStatus, onTaskClick }) => {
     return (
         <div className='relative bg-gray-50 p-4 shadow-sm ring-1 ring-gray-200 rounded-md w-96' style={{ height: "78vh" }}>
-            <div className='pl-1 font-medium text-[hsl(280,13.34%,40.04%)]'>
+            <span className='pl-1 font-medium text-[hsl(280,13.34%,40.04%)]'>
                 <Badge variant={statusBadgeVariantConfig[taskStatus.valueOf()]}>{taskStatus.valueOf()}</Badge>
-            </div>
+            </span>
             <div className="overflow-y-auto overflow-x-hidden p-1" style={{ height: "94%" }}>
                 <TaskList status={taskStatus.valueOf()} tasks={data?.tasks || []} onTaskClick={onTaskClick} />
             </div>
@@ -91,7 +110,7 @@ export default function Tasks() {
     const { data } = postQuery;
 
     const onTaskCreationSuccess = () => {
-        window.location.reload()
+        // window.location.reload()
     }
 
     const onTaskClick = (task: TaskItem) => {

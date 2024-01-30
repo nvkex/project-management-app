@@ -29,9 +29,9 @@ export const taskRouter = createTRPCRouter({
             title: z.string(),
             description: z.string(),
             projectId: z.string(),
-            assigneeId: z.string().nullable(),
-            status: z.string().nullable(),
-            priority: z.string().nullable(),
+            assigneeId: z.string().nullish(),
+            status: z.string().nullish(),
+            priority: z.string().nullish(),
         }))
         .mutation(async ({ ctx, input }) => {
             // Fetch lastCreatedTaskId and abbreviation from the associated project
@@ -60,9 +60,24 @@ export const taskRouter = createTRPCRouter({
             if (input.priority)
                 payload['priority'] = input.priority
 
-            return ctx.db.task.create({
+            // Create task
+            const res = ctx.db.task.create({
                 data: payload,
             });
+
+            // increment last task ID used 
+            const idIncrementRes = await ctx.db.project.update({
+                where: {
+                    id: input.projectId
+                },
+                data: {
+                    lastCreatedTaskId: {
+                        increment: 1
+                    }
+                }
+            })
+            console.log(idIncrementRes)
+            return res;
         }),
     updateAssignee: protectedProcedure
         .input(z.object({ newAssignee: z.string(), taskId: z.string() }))
@@ -79,11 +94,13 @@ export const taskRouter = createTRPCRouter({
     updateProperties: protectedProcedure
         .input(z.object({
             taskId: z.string(),
-            priority: z.string().nullable(),
-            status: z.string().nullable(),
-            title: z.string().nullable(),
-            description: z.string().nullable(),
-            assigneeId: z.string().nullable()
+            priority: z.string().nullish(),
+            status: z.string().nullish(),
+            title: z.string().nullish(),
+            description: z.string().nullish(),
+            assigneeId: z.string().nullish(),
+            startDate: z.date().nullish(),
+            endDate: z.date().nullish()
         }))
         .mutation(({ ctx, input }) => {
             const data: { [key: string]: any } = {}
@@ -96,6 +113,10 @@ export const taskRouter = createTRPCRouter({
                 data['title'] = input.title
             if (input.description)
                 data['description'] = input.description
+            if (input.startDate)
+                data['startDate'] = input.startDate
+            if (input.endDate)
+                data['endDate'] = input.endDate
             if (input.assigneeId)
                 data['assignee'] = { connect: { id: input.assigneeId } }
 

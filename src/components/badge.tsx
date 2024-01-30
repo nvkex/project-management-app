@@ -3,9 +3,10 @@ import { FunctionComponent } from "react";
 type BadgeProps = {
     children: React.ReactNode,
     variant?: string,
+    asDiv?: boolean
 }
 
-const Badge: FunctionComponent<BadgeProps> = ({ children, variant = 'muted' }) => {
+const Badge: FunctionComponent<BadgeProps> = ({ children, variant = 'muted', asDiv = false }) => {
     let bg = 'bg-gray-200'
     let text = "text-gray-800"
     switch (variant) {
@@ -31,11 +32,13 @@ const Badge: FunctionComponent<BadgeProps> = ({ children, variant = 'muted' }) =
             break;
     }
 
-    return (
+    return !asDiv ? (
         <span className={`${bg} ${text} rounded-[3px] text-xs px-1 font-medium`}>
             {children}
         </span>
-    )
+    ) : <div className={`${bg} ${text} rounded-[3px] text-xs px-1 font-medium`}>
+        {children}
+    </div>
 }
 
 
