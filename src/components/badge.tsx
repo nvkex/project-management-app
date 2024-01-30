@@ -18,6 +18,10 @@ const Badge: FunctionComponent<BadgeProps> = ({ children, variant = 'muted', asD
             bg = "bg-indigo-100"
             text = "text-indigo-800"
             break;
+        case "tertiary":
+            bg = "bg-purple-100"
+            text = "text-purple-800"
+            break;
         case "success":
             bg = "bg-sky-200"
             text = "text-sky-800"

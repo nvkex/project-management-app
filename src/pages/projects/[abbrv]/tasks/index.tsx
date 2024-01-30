@@ -45,7 +45,7 @@ const TaskList: FunctionComponent<TaskListProps> = ({ tasks, status, onTaskClick
                     <div key={`task-${status}-${_i}`} className="bg-white rounded-md ring-1 ring-gray-200 p-3 text-sm my-2 hover:cursor-pointer hover:bg-teal-50 hover:ring-teal-200" onClick={() => onTaskClick(task)} >
                         <div className="font-normal">{task.title}</div>
                         <div className="flex justify-between my-2">
-                            <div><Badge>{`${task.ticketId}`}</Badge></div>
+                            <div><Badge variant="tertiary">{`${task.ticketId}`}</Badge></div>
                             <div><Badge variant={priorityBadgeVariantConfig[task.priority]}>{task.priority}</Badge></div>
                         </div>
                         <div className="flex justify-between my-2">
@@ -80,7 +80,7 @@ const TaskList: FunctionComponent<TaskListProps> = ({ tasks, status, onTaskClick
 
 const TaskListColumn: FunctionComponent<TaskListColumnType> = ({ data, taskStatus, onTaskClick }) => {
     return (
-        <div className='relative bg-gray-50 p-4 shadow-sm ring-1 ring-gray-200 rounded-md w-96' style={{ height: "78vh" }}>
+        <div className='relative bg-gray-50 p-4 shadow-sm rounded-md w-96' style={{ height: "78vh" }}>
             <span className='pl-1 font-medium text-[hsl(280,13.34%,40.04%)]'>
                 <Badge variant={statusBadgeVariantConfig[taskStatus.valueOf()]}>{taskStatus.valueOf()}</Badge>
             </span>

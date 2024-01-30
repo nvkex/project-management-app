@@ -6,8 +6,12 @@ type ButtonProps = ComponentPropsWithoutRef<'button'> & {
 
 const Button: FunctionComponent<ButtonProps> = (props) => {
     
-    let classes = 'hover:ring-gray-200 hover:bg-gray-200'
-    if(props.variant)
+    let classes = ''
+    if(props.disabled == true)
+        classes += 'text-gray-400 cursor-not-allowed hover:shadow-none'
+    else
+        classes = 'hover:ring-gray-200 hover:bg-gray-200'
+    if(props.variant && props.disabled != true)
         switch (props.variant) {
             case "primary":
                 classes = "hover:ring-teal-200 hover:bg-teal-200"
