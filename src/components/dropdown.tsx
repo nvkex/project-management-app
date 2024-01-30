@@ -9,6 +9,7 @@ export type DropdownOptionsType = {
 }
 
 type SingleDropdownProps = {
+    id: string,
     options: Array<DropdownOptionsType>,
     onSelect: (data: DropdownOptionsType) => void,
     selected?: DropdownOptionsType | null,
@@ -18,6 +19,7 @@ type SingleDropdownProps = {
 }
 
 type MultiDropdownProps = {
+    id: string,
     options: Array<DropdownOptionsType>,
     onSelect: (data: DropdownOptionsType[]) => void,
     selected?: DropdownOptionsType[] | null,
@@ -28,7 +30,7 @@ type MultiDropdownProps = {
 
 type DropdownProps = SingleDropdownProps | MultiDropdownProps
 
-const Dropdown: FunctionComponent<DropdownProps> = ({ multiple = false, options, selected, selectedLabel, placeholder = "", onSelect }) => {
+const Dropdown: FunctionComponent<DropdownProps> = ({ id, multiple = false, options, selected, selectedLabel, placeholder = "", onSelect }) => {
 
     const noOptions = options.length == 0
 
@@ -66,7 +68,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({ multiple = false, options,
                         <Listbox.Options className="absolute z-40 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm">
                             {options.map((option, optionIdx) => (
                                 <Listbox.Option
-                                    key={optionIdx}
+                                    key={`listbox-option-${id}-${optionIdx}`}
                                     className={({ active }) =>
                                         `relative cursor-default select-none py-2 pl-10 pr-4 ${active ? 'bg-teal-100 text-teal-900' : 'text-gray-900'
                                         }`

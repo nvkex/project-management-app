@@ -19,7 +19,7 @@ const AddMember: FunctionComponent<AddMemberProps> = ({ projectId = '', isOpen, 
     const [userIdSet, setUserIdSet] = useState(new Set())
 
     const mutation = api.project.addMember.useMutation();
-    const { data: rawUserData = [] } = api.user.getAllUsers.useQuery({ projectId });
+    const { data: rawUserData = [] } = api.user.getUsersNotInProject.useQuery({ projectId });
     const userData = rawUserData.map(user => ({ label: user.name, value: user.id }))
 
     const hideDialog = () => { setIsOpen(false) }
@@ -65,7 +65,7 @@ const AddMember: FunctionComponent<AddMemberProps> = ({ projectId = '', isOpen, 
                         </div>))
                     }
                 </div>
-                <Dropdown multiple options={userData} onSelect={onAddUser} selectedLabel={selected => ""} selected={[]} placeholder="Select Users" />
+                <Dropdown id="add-member" multiple options={userData} onSelect={onAddUser} selectedLabel={selected => ""} selected={[]} placeholder="Select Users" />
             </div>
             <div className="mt-6 gap-2 sm:flex sm:flex-row-reverse">
                 <Button onClick={onSubmit} variant="primary">Submit</Button>

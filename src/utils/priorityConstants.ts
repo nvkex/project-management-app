@@ -1,3 +1,6 @@
+
+import { Bars2Icon, ChevronDoubleDownIcon, ChevronDoubleUpIcon, ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
+
 const PRIORITY = {
     LOW: "LOW",
     MEDIUM: "MEDIUM",
@@ -10,6 +13,18 @@ enum PRIORITY_ENUM {
     HIGH = "HIGH"
 }
 
+const shadeByPriorityType = {
+    [PRIORITY_ENUM.LOW.valueOf()] : 'indigo',
+    [PRIORITY_ENUM.MEDIUM.valueOf()] : 'amber',
+    [PRIORITY_ENUM.HIGH.valueOf()] : 'red'
+}
+
+const PRIORITY_ICON = {
+    [PRIORITY_ENUM.LOW.valueOf()] : ChevronDownIcon,
+    [PRIORITY_ENUM.MEDIUM.valueOf()] : Bars2Icon,
+    [PRIORITY_ENUM.HIGH.valueOf()] : ChevronUpIcon
+}
+
 const PRIORITY_LIST = Object.values(PRIORITY)
 const PRIORITY_LIST_AS_OPTIONS = Object.values(PRIORITY).map(status => ({ label: status, value: status }))
 
@@ -19,4 +34,4 @@ const priorityBadgeVariantConfig = {
     [PRIORITY.HIGH]: "danger"
 }
 
-export { PRIORITY, PRIORITY_LIST, PRIORITY_LIST_AS_OPTIONS, priorityBadgeVariantConfig, PRIORITY_ENUM }
+export { PRIORITY, PRIORITY_LIST, PRIORITY_LIST_AS_OPTIONS, priorityBadgeVariantConfig, PRIORITY_ENUM, PRIORITY_ICON, shadeByPriorityType }

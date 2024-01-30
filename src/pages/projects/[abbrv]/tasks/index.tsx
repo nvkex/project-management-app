@@ -1,6 +1,5 @@
 import Head from "next/head";
 import { Prisma } from "@prisma/client";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import NextError from 'next/error';
 
@@ -11,9 +10,10 @@ import { RouterOutputs, api } from "~/utils/api";
 import Badge from "~/components/badge";
 import { FunctionComponent, useState } from "react";
 import AddTask from "~/components/modals/createTask";
-import { STATUS, STATUS_ENUM, statusBadgeVariantConfig } from "~/utils/statusConstants";
+import { STATUS_ENUM, statusBadgeVariantConfig } from "~/utils/statusConstants";
 import { priorityBadgeVariantConfig } from "~/utils/priorityConstants";
 import { UserWithAvatar } from "~/components/userAvatar";
+import UpdateTask from "~/components/modals/updateTask";
 
 type ProjectByIdOutput = RouterOutputs["project"]["getByAbbrv"];
 
@@ -25,21 +25,23 @@ type TaskItem = Prisma.TaskGetPayload<{
 
 type TaskListProps = {
     tasks: Array<TaskItem>,
-    status: string
+    status: string,
+    onTaskClick: (task: TaskItem) => void
 }
 
 type TaskListColumnType = {
     data?: ProjectByIdOutput,
-    taskStatus: STATUS_ENUM
+    taskStatus: STATUS_ENUM,
+    onTaskClick: (task: TaskItem) => void
 }
 
-const TaskList: FunctionComponent<TaskListProps> = ({ tasks, status }) => {
+const TaskList: FunctionComponent<TaskListProps> = ({ tasks, status, onTaskClick }) => {
     const taskListByStatus = tasks.filter(task => task.status == status)
     return (
         <>
             {
                 taskListByStatus.map((task, _i) => (
-                    <div key={`task-${status}-${_i}`} className="bg-white rounded-md ring-1 ring-gray-200 p-3 text-sm my-2">
+                    <div key={`task-${status}-${_i}`} className="bg-white rounded-md ring-1 ring-gray-200 p-3 text-sm my-2 hover:cursor-pointer hover:bg-teal-50 hover:ring-teal-200" onClick={() => onTaskClick(task)} >
                         <div className="font-normal">{task.title}</div>
                         <div className="flex justify-between my-2">
                             <div><Badge>{`${task.ticketId}`}</Badge></div>
@@ -57,14 +59,14 @@ const TaskList: FunctionComponent<TaskListProps> = ({ tasks, status }) => {
     )
 }
 
-const TaskListColumn: FunctionComponent<TaskListColumnType> = ({ data, taskStatus }) => {
+const TaskListColumn: FunctionComponent<TaskListColumnType> = ({ data, taskStatus, onTaskClick }) => {
     return (
         <div className='relative bg-gray-50 p-4 shadow-sm ring-1 ring-gray-200 rounded-md w-96' style={{ height: "78vh" }}>
             <div className='pl-1 font-medium text-[hsl(280,13.34%,40.04%)]'>
                 <Badge variant={statusBadgeVariantConfig[taskStatus.valueOf()]}>{taskStatus.valueOf()}</Badge>
             </div>
             <div className="overflow-y-auto overflow-x-hidden p-1" style={{ height: "94%" }}>
-                <TaskList status={taskStatus.valueOf()} tasks={data?.tasks || []} />
+                <TaskList status={taskStatus.valueOf()} tasks={data?.tasks || []} onTaskClick={onTaskClick} />
             </div>
         </div>
     )
@@ -75,6 +77,8 @@ export default function Tasks() {
     const postQuery = api.project.getByAbbrv.useQuery({ abbrv: abbrv || "" });
 
     const [isAddTaskDialogOpen, setIsAddTaskDialogOpen] = useState(false)
+    const [isUpdateTaskDialogOpen, setIsUpdateTaskDialogOpen] = useState(false)
+    const [selectedTask, setSelectedTask] = useState<TaskItem | null>(null)
 
     if (postQuery.error) {
         return (
@@ -90,6 +94,15 @@ export default function Tasks() {
         window.location.reload()
     }
 
+    const onTaskClick = (task: TaskItem) => {
+        setSelectedTask(task)
+        setIsUpdateTaskDialogOpen(true)
+    }
+
+    const onTaskUpdateSuccess = () => {
+        setSelectedTask(null)
+    }
+
     return (<>
         <Head>
             <title>Tasks - Project Management App</title>
@@ -98,14 +111,15 @@ export default function Tasks() {
         </Head>
         <BaseLayout>
             <AddTask project={data} isOpen={isAddTaskDialogOpen} setIsOpen={setIsAddTaskDialogOpen} onSuccess={onTaskCreationSuccess} />
+            <UpdateTask task={selectedTask} project={data} isOpen={isUpdateTaskDialogOpen} setIsOpen={setIsUpdateTaskDialogOpen} onSuccess={onTaskUpdateSuccess} />
             <div className="flex justify-between align-middle">
                 <PageHead>{data?.abbreviation}: Tasks</PageHead>
                 <Button onClick={() => setIsAddTaskDialogOpen(true)} variant="primary">Create Task</Button>
             </div>
             <div className="pt-6 flex justify-between h-full">
-                <TaskListColumn data={data} taskStatus={STATUS_ENUM.TODO} />
-                <TaskListColumn data={data} taskStatus={STATUS_ENUM.IN_PROGRESS} />
-                <TaskListColumn data={data} taskStatus={STATUS_ENUM.DONE} />
+                <TaskListColumn data={data} taskStatus={STATUS_ENUM.TODO} onTaskClick={onTaskClick} />
+                <TaskListColumn data={data} taskStatus={STATUS_ENUM.IN_PROGRESS} onTaskClick={onTaskClick} />
+                <TaskListColumn data={data} taskStatus={STATUS_ENUM.DONE} onTaskClick={onTaskClick} />
             </div>
         </BaseLayout>
     </>)

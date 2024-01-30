@@ -3,8 +3,7 @@ import { z } from "zod";
 
 import {
     createTRPCRouter,
-    protectedProcedure,
-    publicProcedure,
+    protectedProcedure
 } from "~/server/api/trpc";
 
 export const taskRouter = createTRPCRouter({
@@ -77,4 +76,41 @@ export const taskRouter = createTRPCRouter({
                 },
             });
         }),
+    updateProperties: protectedProcedure
+        .input(z.object({
+            taskId: z.string(),
+            priority: z.string().nullable(),
+            status: z.string().nullable(),
+            title: z.string().nullable(),
+            description: z.string().nullable(),
+            assigneeId: z.string().nullable()
+        }))
+        .mutation(({ ctx, input }) => {
+            const data: { [key: string]: any } = {}
+
+            if (input.priority)
+                data['priority'] = input.priority
+            if (input.status)
+                data['status'] = input.status
+            if (input.title)
+                data['title'] = input.title
+            if (input.description)
+                data['description'] = input.description
+            if (input.assigneeId)
+                data['assignee'] = { connect: { id: input.assigneeId } }
+
+            return ctx.db.task.update({
+                where: {
+                    id: input.taskId,
+                    project: {
+                        members: {
+                            some: {
+                                userId: ctx.session.user.id
+                            }
+                        }
+                    }
+                },
+                data: data,
+            });
+        })
 })

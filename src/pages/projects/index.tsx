@@ -8,10 +8,10 @@ import PageHead from "~/components/pageHead";
 import Table from "~/components/table";
 import BaseLayout from "~/layout/base";
 import { api } from "~/utils/api";
-import EditIcon from "~/components/icons/editIcon";
 import { UserWithAvatar } from "~/components/userAvatar";
 import CreateProject from "~/components/modals/createProject";
 import { useState } from "react";
+import { EllipsisVerticalIcon } from "@heroicons/react/20/solid";
 
 type ProjectItem = Prisma.ProjectGetPayload<{
     include: {
@@ -42,7 +42,7 @@ export default function Projects() {
         { name: "Key", cell: (row: ProjectItem) => <Link className="text-teal-800 hover:text-teal-600 hover:underline" href={`/projects/${row.abbreviation}`}>{row.abbreviation}</Link> },
         { name: "Members", cell: (row: ProjectItem) => row.members.length },
         { name: "Lead", cell: (row: ProjectItem) => leadCell(row.lead.name, row.lead.id) },
-        { name: " ", cell: (row: ProjectItem) => <Link className="hover:text-teal-700 " href={`/projects/${row.abbreviation}/edit`}><EditIcon /></Link> },
+        { name: " ", cell: (row: ProjectItem) => <Link className="hover:text-teal-700 " href={`/projects/${row.abbreviation}/edit`}><EllipsisVerticalIcon /></Link> },
     ]
 
     return (<>

@@ -27,7 +27,7 @@ export default function Header() {
                 <div className="hidden lg:flex lg:gap-x-12">
                     <a href="/dashboard" className="text-sm font-semibold leading-6 text-[hsl(280,13.34%,24.04%)] hover:text-teal-700">Dashboard</a>
                     <a href="/projects" className="text-sm font-semibold leading-6 text-[hsl(280,13.34%,24.04%)] hover:text-teal-700">Projects</a>
-                    <a href="/preferences" className="text-sm font-semibold leading-6 text-[hsl(280,13.34%,24.04%)] hover:text-teal-700">Preferences</a>
+                    <a href="/profile" className="text-sm font-semibold leading-6 text-[hsl(280,13.34%,24.04%)] hover:text-teal-700">Profile</a>
                 </div>
                 <div className="hidden lg:flex lg:flex-1 lg:justify-end">
                     <a href="#" onClick={onLogout} className="text-sm font-semibold leading-6 text-[hsl(280,13.34%,24.04%)] hover:text-teal-700">Log out <span aria-hidden="true">&rarr;</span></a>
@@ -53,7 +53,7 @@ export default function Header() {
                             <div className="space-y-2 py-6">
                                 <a href="/tasks" className="text-sm font-semibold leading-6 text-[hsl(280,13.34%,24.04%)] hover:text-teal-700">Dashboard</a>
                                 <a href="/projects" className="text-sm font-semibold leading-6 text-[hsl(280,13.34%,24.04%)] hover:text-teal-700">Projects</a>
-                                <a href="/preferences" className="text-sm font-semibold leading-6 text-[hsl(280,13.34%,24.04%)] hover:text-teal-700">Preferences</a>
+                                <a href="/profile" className="text-sm font-semibold leading-6 text-[hsl(280,13.34%,24.04%)] hover:text-teal-700">Profile</a>
                             </div>
                             <div className="py-6">
                                 <a href="#" onClick={onLogout} className="text-sm font-semibold leading-6 text-[hsl(280,13.34%,24.04%)] hover:text-teal-700">Log out <span aria-hidden="true">&rarr;</span></a>
