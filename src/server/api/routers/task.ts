@@ -103,7 +103,7 @@ export const taskRouter = createTRPCRouter({
             endDate: z.date().nullish()
         }))
         .mutation(({ ctx, input }) => {
-            const data: { [key: string]: any } = {}
+            const data: Prisma.TaskUpdateInput = {}
 
             if (input.priority)
                 data['priority'] = input.priority
