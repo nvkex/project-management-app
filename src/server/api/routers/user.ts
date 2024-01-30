@@ -44,16 +44,31 @@ export const userRouter = createTRPCRouter({
             });
         }),
     updateUserProfile: protectedProcedure
-        .input(z.object({ name: z.string(), shade: z.string() }))
+        .input(z.object({
+            name: z.string().nullish(),
+            department: z.string().nullish(),
+            organization: z.string().nullish(),
+            location: z.string().nullish(),
+            shade: z.string().nullish(),
+        }))
         .mutation(({ ctx, input }) => {
+            const data: Prisma.UserUpdateInput = {}
+            if (input.name)
+                data['name'] = input.name
+            if (input.department)
+                data['department'] = input.department
+            if (input.organization)
+                data['organization'] = input.organization
+            if (input.location)
+                data['location'] = input.location
+            if (input.shade)
+                data['shade'] = input.shade
+
             return ctx.db.user.update({
                 where: {
                     id: ctx.session.user.id
                 },
-                data: {
-                    name: input.name,
-                    shade: input.shade
-                }
+                data
             });
         }),
     getUsersNotInProject: protectedProcedure
