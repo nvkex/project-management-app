@@ -89,11 +89,11 @@ function AuthShowcase() {
   // );
 
   const goToDashboard = () => {
-    window.location.href = '/dashboard'
+    window.location.href = '/projects'
   }
 
   const bannerText = sessionData ? `Signed in as ${sessionData.user?.name}` : "Start managing your tasks with just one-click"
-  const buttonText = sessionData ? "Dashboard" : "Sign in"
+  const buttonText = sessionData ? "Manage Projects" : "Sign in"
   const buttonOnClick = sessionData ? goToDashboard : () => void signIn()
 
   return (

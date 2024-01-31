@@ -3,6 +3,7 @@ import Button from "../button";
 import Input from "../input";
 import { api } from "~/utils/api";
 import CustomModal from "./customModal";
+import TextArea from "../textArea";
 
 type CreateProjectProps = {
     isOpen: boolean,
@@ -40,7 +41,7 @@ const CreateProject: FunctionComponent<CreateProjectProps> = ({ isOpen, setIsOpe
         <CustomModal title="Create Project" isOpen={isOpen} setIsOpen={setIsOpen}>
             <div className="mt-2 flex flex-col gap-3">
                 <Input placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
-                <Input placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
+                <TextArea placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
                 <Input placeholder="Abbreviation" value={abbreviation} onChange={(e) => setAbbreviation(e.target.value)} />
             </div>
             <div className="mt-6 gap-2 sm:flex sm:flex-row-reverse">

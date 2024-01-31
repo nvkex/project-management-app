@@ -24,9 +24,11 @@ const BaseLayout: FunctionComponent<Props> = ({ children, apiDependency }) => {
         return <main className="bg-teal-50">
             <Header />
             <div className="container px-20 custom-container mx-auto">
-                <div className="container bg-white p-4 min-h-full min-w-full shadow-md text-center text-lg">
-                    <ExclamationCircleIcon />
-                    <div>Oops! Something went wrong</div>
+                <div className="container bg-white text-gray-500 p-4 min-h-full min-w-full shadow-md text-center text-lg">
+                    <div className="flex gap-2 justify-center align-middle">
+                        <ExclamationCircleIcon width={30} />
+                        <div>Oops! Something went wrong</div>
+                    </div>
                 </div>
             </div>
         </main>

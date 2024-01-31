@@ -9,6 +9,7 @@ import { PRIORITY, PRIORITY_LIST_AS_OPTIONS, priorityBadgeVariantConfig } from "
 import Badge from "../badge";
 import { UserWithAvatar } from "../userAvatar";
 import { Prisma } from "@prisma/client";
+import TextArea from "../textArea";
 
 type ProjectByIdOutput = RouterOutputs["project"]["getByAbbrv"];
 type UpdateTaskPayload = RouterInputs["task"]["updateProperties"]
@@ -105,7 +106,7 @@ const UpdateTask: FunctionComponent<UpdateTaskProps> = ({ task, project, isOpen,
         <CustomModal title="Create Task" isOpen={isOpen} setIsOpen={setIsOpen}>
             <div className="mt-2 flex flex-col gap-3">
                 <Input style={{ width: "100%" }} value={title || ""} onChange={(e) => setTitle(e.target.value)} placeholder="Title" />
-                <Input style={{ width: "100%" }} value={description || ""} onChange={(e) => setDescription(e.target.value)} placeholder="Description" />
+                <TextArea style={{ width: "100%" }} value={description || ""} onChange={(e) => setDescription(e.target.value)} placeholder="Description" />
                 <Input style={{ width: "100%" }} value={startDate || ""} onChange={(e) => setStartDate(e.target.value)} placeholder="Start Date: MM/DD/YYYY" />
                 <Input style={{ width: "100%" }} value={endDate || ""} onChange={(e) => setEndDate(e.target.value)} placeholder="End Date: MM/DD/YYYY" />
                 <Dropdown id="update-task-assignee" placeholder="Add Assignee" options={memberList} selected={assignee} onSelect={setAssignee} selectedLabel={selected => <UserWithAvatar name={selected?.label || ""} userId={selected?.value || ""} shade={selected?.shade} disableLink />} />

@@ -10,7 +10,7 @@ import BaseLayout from "~/layout/base";
 import { api } from "~/utils/api";
 import { UserWithAvatar } from "~/components/userAvatar";
 import CreateProject from "~/components/modals/createProject";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { EllipsisVerticalIcon } from "@heroicons/react/20/solid";
 
 type ProjectItem = Prisma.ProjectGetPayload<{
@@ -25,6 +25,8 @@ export default function Projects() {
     const getQuery = api.project.getAll.useQuery();
     const { data = [] } = getQuery;
 
+    const [filteredProjects, setFilteredProjects] = useState(data)
+    const [filterText, setFilterText] = useState('')
     const [isCreateProjectDialogOpen, setIsCreateProjectDialogOpen] = useState(false)
 
     const onTaskCreationSuccess = () => {
@@ -46,6 +48,18 @@ export default function Projects() {
         { name: " ", cell: (row: ProjectItem) => <Link className="hover:text-teal-700 " href={`/projects/${row.abbreviation}/edit`}><EllipsisVerticalIcon /></Link> },
     ]
 
+    useEffect(() => {
+        if (filterText.length !== 0) {
+            setFilteredProjects(data.filter(d => d.title.toLowerCase().includes(filterText)))
+        } else {
+            setFilteredProjects(data)
+        }
+    }, [filterText])
+
+    useEffect(() => {
+        setFilteredProjects(data)
+    }, [data])
+
     return (<>
         <Head>
             <title>Projects - Project Management App</title>
@@ -59,12 +73,11 @@ export default function Projects() {
                 <Button variant="primary" onClick={() => setIsCreateProjectDialogOpen(true)}>Create Project</Button>
             </div>
             <div className="pt-6">
-                <Input placeholder="Search Projects" />
+                <Input placeholder="Search Projects" value={filterText} onChange={(e) => setFilterText(e.target.value.toLowerCase())} />
                 <div className="pt-2">
                     {
-                        data.length == 0 ? <div className="text-center text-gray-500">No Projects Created</div> : <Table data={data} columns={columns} />
+                        filteredProjects.length == 0 ? <div className="text-center text-gray-500">No Data</div> : <Table data={filteredProjects} columns={columns} />
                     }
-
                 </div>
             </div>
         </BaseLayout>
