@@ -61,7 +61,7 @@ const AddMember: FunctionComponent<AddMemberProps> = ({ projectId = '', isOpen, 
                     }
                     {
                         addedUserIds.map(user => (<div className="my-2">
-                            <UserWithAvatar name={user.label || ""} userId={user.value || ""} disableLink />
+                            <UserWithAvatar name={user.label || ""} userId={user.value || ""} shade={user.shade} disableLink />
                         </div>))
                     }
                 </div>

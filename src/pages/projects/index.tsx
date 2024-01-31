@@ -30,9 +30,9 @@ export default function Projects() {
         window.location.reload()
     }
 
-    const leadCell = (name: string, userId: string) => {
+    const leadCell = (name: string, userId: string, shade: string) => {
         return (
-            <UserWithAvatar name={name} userId={userId} />
+            <UserWithAvatar name={name} userId={userId} shade={shade} />
         )
     }
 
@@ -41,7 +41,7 @@ export default function Projects() {
         { name: "Description", cell: (row: ProjectItem) => row.description },
         { name: "Key", cell: (row: ProjectItem) => <Link className="text-teal-800 hover:text-teal-600 hover:underline" href={`/projects/${row.abbreviation}`}>{row.abbreviation}</Link> },
         { name: "Members", cell: (row: ProjectItem) => row.members.length },
-        { name: "Lead", cell: (row: ProjectItem) => leadCell(row.lead.name, row.lead.id) },
+        { name: "Lead", cell: (row: ProjectItem) => leadCell(row.lead.name, row.lead.id, row.lead.shade) },
         { name: " ", cell: (row: ProjectItem) => <Link className="hover:text-teal-700 " href={`/projects/${row.abbreviation}/edit`}><EllipsisVerticalIcon /></Link> },
     ]
 

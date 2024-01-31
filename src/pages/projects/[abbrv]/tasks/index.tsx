@@ -68,7 +68,7 @@ const TaskList: FunctionComponent<TaskListProps> = ({ tasks, status, onTaskClick
                         </div>
                         <div className="my-2">
                             {
-                                task.assignee && <UserWithAvatar name={task.assignee.name} userId={task.assignee.id} />
+                                task.assignee && <UserWithAvatar name={task.assignee.name} userId={task.assignee.id} shade={task.assignee.shade} />
                             }
                         </div>
                     </div>

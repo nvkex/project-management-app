@@ -20,13 +20,15 @@ type UserPrefUpdateInput = RouterInputs["user"]["updateUserProfile"]
 
 type ColumnPropType = {
     col?: Number
-    children?: React.ReactNode
+    children?: React.ReactNode,
+    header?: React.ReactNode
 }
 
-const Column: FunctionComponent<ColumnPropType> = ({ col = 100, children }) => {
+const Column: FunctionComponent<ColumnPropType> = ({ col = 100, children, header }) => {
     return (
         <div className={`relative p-4 shadow-sm ring-1 ring-gray-200 rounded-md`} style={{ height: "78vh", width: col + "%" }}>
-            <div className="overflow-y-auto overflow-x-hidden p-1" style={{ height: "94%" }}>
+            {header}
+            <div className="relative overflow-y-auto overflow-x-hidden p-1" style={{ height: "94%" }}>
                 {children}
             </div>
         </div>
@@ -94,13 +96,12 @@ function UserPreferences(props: { data: UserDetailsOutput }) {
                 <div className="flex justify-between align-middle">
                     <PageHead>User Preferences</PageHead>
                     <div>
-                        <UserWithAvatar userId={data?.id || ''} name={data?.name || ''} disableLink />
+                        <UserWithAvatar userId={data?.id || ''} name={data?.name || ''} shade={data?.shade} disableLink />
                     </div>
                 </div>
                 <div className="pt-6 flex gap-4 justify-between h-full">
-                    <Column col={30}>
-                        <div className='text-xs text-gray-500 font-medium uppercase'>About</div>
-                        <div className='flex gap-4 my-6'>
+                    <Column col={30} header={<div className='text-xs text-gray-500 font-medium uppercase pb-1'>About</div>}>
+                        <div className='flex gap-4 mt-4 mb-6'>
                             <HeartIcon width={20} className='text-teal-500' />
                             <Input value={name || ""} onChange={(e) => updateNullOnEmpty(e.target.value, setName)} classes='w-full hover:bg-gray-200' />
                         </div>
@@ -129,9 +130,8 @@ function UserPreferences(props: { data: UserDetailsOutput }) {
                             <Button variant='primary' onClick={updatePreferences} disabled={!hasValuesChanged}>Save</Button>
                         </div>
                     </Column>
-                    <Column col={70}>
-                        <div className='text-xs text-gray-500 font-medium uppercase'>Worked ON</div>
-                        <div className='mt-2 overflow-y-auto'>
+                    <Column col={70} header={<div className='text-xs text-gray-500 font-medium uppercase pb-1'>Worked ON</div>}>
+                        <div>
                             {
                                 data && data.assignedTasks.map((task, ti) => (
                                     <div key={`user-task-list-${ti}`} className='bg-gray-50 my-4 p-4 rounded-md hover:shadow-md'>

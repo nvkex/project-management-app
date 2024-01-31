@@ -24,7 +24,7 @@ function UserProfile(props: { userData: UserDetailsOutput }) {
                 <div className="flex justify-between align-middle">
                     <PageHead>User Preferences</PageHead>
                     <div>
-                        <UserWithAvatar userId={userData?.id || ''} name={userData?.name || ''} disableLink />
+                        <UserWithAvatar userId={userData?.id || ''} name={userData?.name || ''} shade={userData?.shade} disableLink />
                     </div>
                 </div>
             </BaseLayout>

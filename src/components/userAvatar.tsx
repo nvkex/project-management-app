@@ -1,30 +1,64 @@
 import Link from "next/link";
 import { FunctionComponent } from "react";
+import { twMerge } from "tailwind-merge";
 
 type UserAvatarProps = {
-    name: string
+    name: string,
+    shade?: string
 }
 
 type UserWithAvatarProps = {
     name: string,
     userId: string,
     disableLink?: boolean
+    shade?: string
 }
 
-const UserAvatar: FunctionComponent<UserAvatarProps> = ({ name }) => {
+const AVATAR_BG_CONFIG: { [key: string]: any } = {
+    'slate': 'bg-slate-700',
+    'gray': 'bg-gray-700',
+    'zinc': 'bg-zinc-700',
+    'neutral': 'bg-neutral-700',
+    'stone': 'bg-stone-700',
+    'red': 'bg-red-700',
+    'orange': 'bg-orange-700',
+    'amber': 'bg-amber-700',
+    'yellow': 'bg-yellow-700',
+    'lime': 'bg-lime-700',
+    'green': 'bg-green-700',
+    'emerald': 'bg-emerald-700',
+    'teal': 'bg-teal-700',
+    'cyan': 'bg-cyan-700',
+    'sky': 'bg-sky-700',
+    'blue': 'bg-blue-700',
+    'indigo': 'bg-indigo-700',
+    'violet': 'bg-violet-700',
+    'purple': 'bg-purple-700',
+    'fuchsia': 'bg-fuchsia-700',
+    'pink': 'bg-pink-700',
+    'rose': 'bg-rose-700',
+}
+
+const UserAvatar: FunctionComponent<UserAvatarProps> = ({ name, shade = 'teal' }) => {
+
+    const classNames = twMerge(
+        "rounded-full text-white flex justify-center align-middle",
+        AVATAR_BG_CONFIG[shade]
+    )
+
     const initials = name.split(" ")
         .map(s => s[0])
         .reduce((a, b = "") => a + b)
     return (
-        <span className="rounded-full bg-teal-700 text-white flex justify-center align-middle" style={{ padding: "2px", width: "25px", height: "25px" }}><small>{initials}</small></span>
+        <span className={classNames} style={{ padding: "2px", width: "25px", height: "25px" }}><small>{initials}</small></span>
     )
 }
 
-const UserWithAvatar: FunctionComponent<UserWithAvatarProps> = ({ name, userId, disableLink = false }) => {
+const UserWithAvatar: FunctionComponent<UserWithAvatarProps> = ({ name, userId, shade = 'teal', disableLink = false }) => {
 
     return (
         <div className="flex gap-1 align-middle">
-            <UserAvatar name={name} />
+            <UserAvatar name={name} shade={shade} />
             {
                 disableLink ? (
                     <div className="text-[hsl(280,13.34%,24.04%)]">{name}</div>

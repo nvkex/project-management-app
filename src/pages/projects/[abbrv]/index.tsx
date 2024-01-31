@@ -12,6 +12,7 @@ import { UserWithAvatar } from '~/components/userAvatar';
 import BaseLayout from '~/layout/base';
 
 import { api, type RouterOutputs } from '~/utils/api';
+import { getArray, groupBy } from '~/utils/utilities';
 
 // Type definitions
 type ProjectByIdOutput = RouterOutputs["project"]["getByAbbrv"];
@@ -26,20 +27,49 @@ type ProjectMemberType = Prisma.ProjectsAndUsersGetPayload<{
     }
 }>
 
+type ProjectTaskType = Prisma.TaskGetPayload<{
+    include: {
+        assignee: true
+    }
+}>
+
 type MembersTableProps = {
     members: Array<ProjectMemberType>
+}
+type TasksTableProps = {
+    tasks: Array<ProjectTaskType>,
+    keyColumn: "status" | "priority",
+    label: string
+}
+
+type GroupedTaskItemByStatus = {
+    "status"?: string,
+    "priority"?: string,
+    tasks: ProjectTaskType[]
 }
 
 
 // Components
 const MembersTable: FunctionComponent<MembersTableProps> = ({ members = [] }) => {
     const columns = [
-        { name: "Assignee", cell: (row: ProjectMemberType) => <div><UserWithAvatar name={row.user.name} userId={row.user.id} /></div> },
+        { name: "Assignee", cell: (row: ProjectMemberType) => <div><UserWithAvatar name={row.user.name} userId={row.user.id} shade={row.user.shade} /></div> },
         { name: "Tasks", cell: (row: ProjectMemberType) => row.user.assignedTasks.length },
     ]
 
     return (
         <Table data={members} columns={columns} />
+    )
+}
+
+const TasksTableByStatus: FunctionComponent<TasksTableProps> = ({ tasks = [], keyColumn, label }) => {
+    const groupedTasks = getArray(groupBy(tasks, keyColumn), keyColumn, 'tasks')
+    const columns = [
+        { name: label, cell: (row: GroupedTaskItemByStatus) => row[keyColumn]},
+        { name: "Tasks", cell: (row: GroupedTaskItemByStatus) => row.tasks.length },
+    ]
+
+    return (
+        <Table data={groupedTasks} columns={columns} />
     )
 }
 
@@ -59,7 +89,7 @@ function ProjectDetails(props: { project: ProjectByIdOutput, loading: boolean })
                 <div className="flex justify-between align-middle">
                     <PageHead>{project?.title}</PageHead>
                     <div>
-                        <UserWithAvatar userId={project?.leadUserId || ''} name={project?.lead.name || ''} />
+                        <UserWithAvatar userId={project?.leadUserId || ''} name={project?.lead.name || ''} shade={project?.lead.shade} />
                     </div>
                 </div>
                 <div className="pt-6">
@@ -69,7 +99,7 @@ function ProjectDetails(props: { project: ProjectByIdOutput, loading: boolean })
                     </em>
                 </div>
                 <div className="pt-6 flex justify-between">
-                    <div className='relative bg-white p-4 shadow-sm ring-1 ring-gray-200 rounded-md h-80' style={{ width: 400 }}>
+                    <div className='relative bg-gray-50 p-4 shadow-sm rounded-md h-80' style={{ width: 400 }}>
                         <div className='font-medium text-[hsl(280,13.34%,40.04%)]'>Team Workload</div>
                         <div className="overflow-y-auto overflow-x-hidden my-1" style={{ height: 212 }}>
                             <MembersTable members={project?.members || []} />
@@ -78,10 +108,10 @@ function ProjectDetails(props: { project: ProjectByIdOutput, loading: boolean })
                             <Button onClick={() => setShowAddMemberDialog(true)}>Add Member</Button>
                         </div>
                     </div>
-                    <div className='relative bg-white p-4 shadow-sm ring-1 ring-gray-200 rounded-md h-80' style={{ width: 400 }}>
+                    <div className='relative bg-gray-50 p-4 shadow-sm rounded-md h-80' style={{ width: 400 }}>
                         <div className='font-medium text-[hsl(280,13.34%,40.04%)] mb-2'>Task Distribution</div>
                         <div className="overflow-y-auto overflow-x-hidden my-1" style={{ height: 212 }}>
-                            <MembersTable members={project?.members || []} />
+                            <TasksTableByStatus tasks={project?.tasks || []} keyColumn="status" label="Status" />
                         </div>
                         <div className='absolute bottom-4 left-4'>
                             <Link href={`/projects/${project?.abbreviation}/tasks`}>
@@ -89,10 +119,10 @@ function ProjectDetails(props: { project: ProjectByIdOutput, loading: boolean })
                             </Link>
                         </div>
                     </div>
-                    <div className='relative bg-white p-4 shadow-sm ring-1 ring-gray-200 rounded-md h-80' style={{ width: 400 }}>
+                    <div className='relative bg-gray-50 p-4 shadow-sm rounded-md h-80' style={{ width: 400 }}>
                         <div className='font-medium text-[hsl(280,13.34%,40.04%)] mb-2'>Priority Breakdown</div>
                         <div className="overflow-y-auto overflow-x-hidden my-1" style={{ height: 212 }}>
-                            <MembersTable members={project?.members || []} />
+                            <TasksTableByStatus tasks={project?.tasks || []} keyColumn="priority" label="Priority" />
                         </div>
                     </div>
                 </div>
