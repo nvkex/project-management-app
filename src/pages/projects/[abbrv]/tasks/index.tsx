@@ -15,6 +15,7 @@ import { priorityBadgeVariantConfig } from "~/utils/priorityConstants";
 import { UserWithAvatar } from "~/components/userAvatar";
 import UpdateTask from "~/components/modals/updateTask";
 import { CalendarIcon } from "@heroicons/react/20/solid";
+import Link from "next/link";
 
 type ProjectByIdOutput = RouterOutputs["project"]["getByAbbrv"];
 
@@ -125,7 +126,7 @@ export default function Tasks() {
             <AddTask project={data} isOpen={isAddTaskDialogOpen} setIsOpen={setIsAddTaskDialogOpen} onSuccess={onTaskCreationSuccess} />
             <UpdateTask task={selectedTask} project={data} isOpen={isUpdateTaskDialogOpen} setIsOpen={setIsUpdateTaskDialogOpen} onSuccess={onTaskUpdateSuccess} />
             <div className="flex justify-between align-middle">
-                <PageHead>{data?.abbreviation}: Tasks</PageHead>
+                <PageHead><Link className="text-teal-500 hover:underline" href={`/projects/${data?.abbreviation}`}>{data?.abbreviation}</Link>: Tasks</PageHead>
                 <Button onClick={() => setIsAddTaskDialogOpen(true)} variant="primary">Create Task</Button>
             </div>
             <div className="pt-6 flex justify-between h-full">
