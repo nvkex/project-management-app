@@ -22,7 +22,8 @@ type ProjectItem = Prisma.ProjectGetPayload<{
 
 export default function Projects() {
 
-    const { data = [] } = api.project.getAll.useQuery();
+    const getQuery = api.project.getAll.useQuery();
+    const { data = [] } = getQuery;
 
     const [isCreateProjectDialogOpen, setIsCreateProjectDialogOpen] = useState(false)
 
@@ -51,8 +52,7 @@ export default function Projects() {
             <meta name="description" content="Overview of tasks and members - Project Management App" />
             <link rel="icon" href="/favicon.ico" />
         </Head>
-        <BaseLayout>
-
+        <BaseLayout apiDependency={getQuery}>
             <CreateProject isOpen={isCreateProjectDialogOpen} setIsOpen={setIsCreateProjectDialogOpen} onSuccess={onTaskCreationSuccess} />
             <div className="flex justify-between align-middle">
                 <PageHead>Projects</PageHead>
@@ -61,7 +61,10 @@ export default function Projects() {
             <div className="pt-6">
                 <Input placeholder="Search Projects" />
                 <div className="pt-2">
-                    <Table data={data} columns={columns} />
+                    {
+                        data.length == 0 ? <div className="text-center text-gray-500">No Projects Created</div> : <Table data={data} columns={columns} />
+                    }
+
                 </div>
             </div>
         </BaseLayout>

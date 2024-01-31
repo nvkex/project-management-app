@@ -98,19 +98,11 @@ export default function Tasks() {
     const [isAddTaskDialogOpen, setIsAddTaskDialogOpen] = useState(false)
     const [isUpdateTaskDialogOpen, setIsUpdateTaskDialogOpen] = useState(false)
     const [selectedTask, setSelectedTask] = useState<TaskItem | null>(null)
-
-    if (postQuery.error) {
-        return (
-            <NextError
-                title={postQuery.error.message}
-                statusCode={postQuery.error.data?.httpStatus ?? 500}
-            />
-        );
-    }
+    
     const { data } = postQuery;
 
     const onTaskCreationSuccess = () => {
-        // window.location.reload()
+        window.location.reload()
     }
 
     const onTaskClick = (task: TaskItem) => {
@@ -120,6 +112,7 @@ export default function Tasks() {
 
     const onTaskUpdateSuccess = () => {
         setSelectedTask(null)
+        window.location.reload()
     }
 
     return (<>
@@ -128,7 +121,7 @@ export default function Tasks() {
             <meta name="description" content="Overview of tasks and members - Project Management App" />
             <link rel="icon" href="/favicon.ico" />
         </Head>
-        <BaseLayout>
+        <BaseLayout apiDependency={postQuery}>
             <AddTask project={data} isOpen={isAddTaskDialogOpen} setIsOpen={setIsAddTaskDialogOpen} onSuccess={onTaskCreationSuccess} />
             <UpdateTask task={selectedTask} project={data} isOpen={isUpdateTaskDialogOpen} setIsOpen={setIsUpdateTaskDialogOpen} onSuccess={onTaskUpdateSuccess} />
             <div className="flex justify-between align-middle">
