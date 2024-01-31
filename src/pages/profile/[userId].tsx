@@ -1,3 +1,4 @@
+import { useSession } from 'next-auth/react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 
@@ -7,6 +8,11 @@ import { api } from '~/utils/api';
 
 const ProfileEditPage = () => {
     const userId = useRouter().query.userId as string;
+    const { data: sessionData } = useSession();
+
+    if(sessionData?.user.id == userId)
+        window.location.href = "/profile"
+    
     const postQuery = api.user.getUserProfile.useQuery({ userId });
 
     const { data } = postQuery;

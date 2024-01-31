@@ -45,7 +45,7 @@ export default function Projects() {
         { name: "Key", cell: (row: ProjectItem) => <Link className="text-teal-800 hover:text-teal-600 hover:underline" href={`/projects/${row.abbreviation}`}>{row.abbreviation}</Link> },
         { name: "Members", cell: (row: ProjectItem) => row.members.length },
         { name: "Lead", cell: (row: ProjectItem) => leadCell(row.lead.name, row.lead.id, row.lead.shade) },
-        { name: " ", cell: (row: ProjectItem) => <Link className="hover:text-teal-700 " href={`/projects/${row.abbreviation}/edit`}><EllipsisVerticalIcon /></Link> },
+        // { name: " ", cell: (row: ProjectItem) => <Link className="hover:text-teal-700 " href={`/projects/${row.abbreviation}/edit`}><EllipsisVerticalIcon /></Link> },
     ]
 
     useEffect(() => {
