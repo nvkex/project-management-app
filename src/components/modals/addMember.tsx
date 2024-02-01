@@ -1,9 +1,8 @@
-import { FunctionComponent, useEffect, useState } from "react";
+import { type FunctionComponent, useEffect, useState } from "react";
 import Button from "../button";
-import Input from "../input";
 import { api } from "~/utils/api";
 import CustomModal from "./customModal";
-import Dropdown, { DropdownOptionsType } from "../dropdown";
+import Dropdown, { type DropdownOptionsType } from "../dropdown";
 import { UserWithAvatar } from "../userAvatar";
 
 type AddMemberProps = {
@@ -13,19 +12,17 @@ type AddMemberProps = {
     setIsOpen: (value: boolean) => void
 }
 
-const AddMember: FunctionComponent<AddMemberProps> = ({ projectId = '', isOpen, setIsOpen, onSuccess = () => { } }) => {
-    const [userEmail, setUserEmail] = useState('')
+const AddMember: FunctionComponent<AddMemberProps> = ({ projectId = '', isOpen, setIsOpen, onSuccess = () => null }) => {
     const [addedUserIds, setAddedUserIds] = useState<Array<DropdownOptionsType> | []>([])
     const [userIdSet, setUserIdSet] = useState(new Set())
 
-    const mutation = api.project.addMember.useMutation();
+    const mutation = api.project.addMembers.useMutation();
     const { data: rawUserData = [] } = api.user.getUsersNotInProject.useQuery({ projectId });
     const userData = rawUserData.map(user => ({ label: user.name, value: user.id }))
 
     const hideDialog = () => { setIsOpen(false) }
 
     const clearState = () => {
-        setUserEmail('')
         setAddedUserIds([])
     }
 
@@ -36,14 +33,20 @@ const AddMember: FunctionComponent<AddMemberProps> = ({ projectId = '', isOpen, 
             userIdSet.add(d.value)
             return true
         })
+        setUserIdSet(userIdSet)
         setAddedUserIds(t => [...t, ...uniqUsers])
     }
 
     const onSubmit = async () => {
-        // const res = await mutation.mutate({ projectId, userIds: addedUserIds.map(user => user.value) });
-        alert("Added!")
-        onSuccess && onSuccess()
-        hideDialog()
+        try{
+            mutation.mutate({ projectId, userIds: addedUserIds.map(user => user.value) })
+            onSuccess && onSuccess()
+            hideDialog()
+        }
+        catch(e){
+            alert("Failed to add members")
+            console.log(e)
+        }
     }
 
     useEffect(() => {
@@ -60,12 +63,12 @@ const AddMember: FunctionComponent<AddMemberProps> = ({ projectId = '', isOpen, 
                         addedUserIds.length == 0 && <span className="text-gray-400 px-1">No users selected</span>
                     }
                     {
-                        addedUserIds.map(user => (<div className="my-2">
+                        addedUserIds.map(user => (<div className="my-2" key={`added-user-list-item-${user.value}`}>
                             <UserWithAvatar name={user.label || ""} userId={user.value || ""} shade={user.shade} disableLink />
                         </div>))
                     }
                 </div>
-                <Dropdown id="add-member" multiple options={userData} onSelect={onAddUser} selectedLabel={selected => ""} selected={[]} placeholder="Select Users" />
+                <Dropdown id="add-member" multiple options={userData} onSelect={onAddUser} selectedLabel={() => ""} selected={[]} placeholder="Select Users" />
             </div>
             <div className="mt-6 gap-2 sm:flex sm:flex-row-reverse">
                 <Button onClick={onSubmit} variant="primary">Submit</Button>

@@ -1,16 +1,15 @@
-import { Prisma } from '@prisma/client';
-import NextError from 'next/error';
+import { type Prisma } from '@prisma/client';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { FunctionComponent, useState } from 'react';
+import { type FunctionComponent, useState } from 'react';
+
 import Button from '~/components/button';
 import AddMember from '~/components/modals/addMember';
 import PageHead from '~/components/pageHead';
 import Table from '~/components/table';
 import { UserWithAvatar } from '~/components/userAvatar';
 import BaseLayout from '~/layout/base';
-
 import { api, type RouterOutputs } from '~/utils/api';
 import { getArray, groupBy } from '~/utils/utilities';
 
@@ -83,7 +82,7 @@ function ProjectDetails(props: { project: ProjectByIdOutput, loading: boolean })
             <div className="flex justify-between align-middle">
                 <PageHead>{project?.title}</PageHead>
                 <div>
-                    <UserWithAvatar userId={project?.leadUserId || ''} name={project?.lead.name || ''} shade={project?.lead.shade} />
+                    <UserWithAvatar userId={project?.leadUserId ?? ''} name={project?.lead.name ?? ''} shade={project?.lead.shade} />
                 </div>
             </div>
             <div className="pt-6">
@@ -96,7 +95,7 @@ function ProjectDetails(props: { project: ProjectByIdOutput, loading: boolean })
                 <div className='relative bg-gray-50 p-4 shadow-sm rounded-md h-80' style={{ width: 400 }}>
                     <div className='font-medium text-[hsl(280,13.34%,40.04%)]'>Team Workload</div>
                     <div className="overflow-y-auto overflow-x-hidden my-1" style={{ height: 212 }}>
-                        <MembersTable members={project?.members || []} />
+                        <MembersTable members={project?.members ?? []} />
                     </div>
                     <div className='absolute bottom-4 left-4'>
                         <Button onClick={() => setShowAddMemberDialog(true)}>Add Member</Button>
@@ -105,7 +104,7 @@ function ProjectDetails(props: { project: ProjectByIdOutput, loading: boolean })
                 <div className='relative bg-gray-50 p-4 shadow-sm rounded-md h-80' style={{ width: 400 }}>
                     <div className='font-medium text-[hsl(280,13.34%,40.04%)] mb-2'>Task Distribution</div>
                     <div className="overflow-y-auto overflow-x-hidden my-1" style={{ height: 212 }}>
-                        <TasksTableByStatus tasks={project?.tasks || []} keyColumn="status" label="Status" />
+                        <TasksTableByStatus tasks={project?.tasks ?? []} keyColumn="status" label="Status" />
                     </div>
                     <div className='absolute bottom-4 left-4'>
                         <Link href={`/projects/${project?.abbreviation}/tasks`}>
@@ -116,7 +115,7 @@ function ProjectDetails(props: { project: ProjectByIdOutput, loading: boolean })
                 <div className='relative bg-gray-50 p-4 shadow-sm rounded-md h-80' style={{ width: 400 }}>
                     <div className='font-medium text-[hsl(280,13.34%,40.04%)] mb-2'>Priority Breakdown</div>
                     <div className="overflow-y-auto overflow-x-hidden my-1" style={{ height: 212 }}>
-                        <TasksTableByStatus tasks={project?.tasks || []} keyColumn="priority" label="Priority" />
+                        <TasksTableByStatus tasks={project?.tasks ?? []} keyColumn="priority" label="Priority" />
                     </div>
                 </div>
             </div>

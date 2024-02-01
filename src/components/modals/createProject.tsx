@@ -1,4 +1,4 @@
-import { FunctionComponent, useEffect, useState } from "react";
+import { type FunctionComponent, useEffect, useState } from "react";
 import Button from "../button";
 import Input from "../input";
 import { api } from "~/utils/api";
@@ -11,7 +11,7 @@ type CreateProjectProps = {
     onSuccess?: () => void
 }
 
-const CreateProject: FunctionComponent<CreateProjectProps> = ({ isOpen, setIsOpen, onSuccess = () => { } }) => {
+const CreateProject: FunctionComponent<CreateProjectProps> = ({ isOpen, setIsOpen, onSuccess = () => null }) => {
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
     const [abbreviation, setAbbreviation] = useState('')
@@ -21,9 +21,14 @@ const CreateProject: FunctionComponent<CreateProjectProps> = ({ isOpen, setIsOpe
         const formData = {
             title, description, abbreviation
         }
-        const res = await mutation.mutate(formData);
-        alert("Created!")
-        onSuccess && onSuccess()
+        try{
+            mutation.mutate(formData);
+            onSuccess && onSuccess()
+        }
+        catch(e) {
+            alert("Error!")
+            console.log(e)
+        }
     }
 
     const clearState = () => {

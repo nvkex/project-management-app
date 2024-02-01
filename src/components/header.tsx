@@ -1,9 +1,11 @@
+/* eslint-disable @next/next/no-img-element */
 import { signOut } from "next-auth/react";
+import Link from "next/link";
 
 export default function Header() {
 
     const onLogout = () => {
-        signOut()
+        void signOut()
         window.location.href = '/'
     }
 
@@ -25,9 +27,9 @@ export default function Header() {
                     </button>
                 </div>
                 <div className="hidden lg:flex lg:gap-x-12">
-                    <a href="/dashboard" className="text-sm font-semibold leading-6 text-[hsl(280,13.34%,24.04%)] hover:text-teal-700">Dashboard</a>
-                    <a href="/projects" className="text-sm font-semibold leading-6 text-[hsl(280,13.34%,24.04%)] hover:text-teal-700">Projects</a>
-                    <a href="/profile" className="text-sm font-semibold leading-6 text-[hsl(280,13.34%,24.04%)] hover:text-teal-700">Profile</a>
+                    <Link href="/dashboard" className="text-sm font-semibold leading-6 text-[hsl(280,13.34%,24.04%)] hover:text-teal-700">Dashboard</Link>
+                    <Link href="/projects" className="text-sm font-semibold leading-6 text-[hsl(280,13.34%,24.04%)] hover:text-teal-700">Projects</Link>
+                    <Link href="/profile" className="text-sm font-semibold leading-6 text-[hsl(280,13.34%,24.04%)] hover:text-teal-700">Profile</Link>
                 </div>
                 <div className="hidden lg:flex lg:flex-1 lg:justify-end">
                     <a href="#" onClick={onLogout} className="text-sm font-semibold leading-6 text-[hsl(280,13.34%,24.04%)] hover:text-teal-700">Log out <span aria-hidden="true">&rarr;</span></a>
@@ -51,12 +53,12 @@ export default function Header() {
                     <div className="mt-6 flow-root">
                         <div className="-my-6 divide-y divide-gray-500/10">
                             <div className="space-y-2 py-6">
-                                <a href="/tasks" className="text-sm font-semibold leading-6 text-[hsl(280,13.34%,24.04%)] hover:text-teal-700">Dashboard</a>
-                                <a href="/projects" className="text-sm font-semibold leading-6 text-[hsl(280,13.34%,24.04%)] hover:text-teal-700">Projects</a>
-                                <a href="/profile" className="text-sm font-semibold leading-6 text-[hsl(280,13.34%,24.04%)] hover:text-teal-700">Profile</a>
+                                <Link href="/tasks" className="text-sm font-semibold leading-6 text-[hsl(280,13.34%,24.04%)] hover:text-teal-700">Dashboard</Link>
+                                <Link href="/projects" className="text-sm font-semibold leading-6 text-[hsl(280,13.34%,24.04%)] hover:text-teal-700">Projects</Link>
+                                <Link href="/profile" className="text-sm font-semibold leading-6 text-[hsl(280,13.34%,24.04%)] hover:text-teal-700">Profile</Link>
                             </div>
                             <div className="py-6">
-                                <a href="#" onClick={onLogout} className="text-sm font-semibold leading-6 text-[hsl(280,13.34%,24.04%)] hover:text-teal-700">Log out <span aria-hidden="true">&rarr;</span></a>
+                                <Link href="#" onClick={onLogout} className="text-sm font-semibold leading-6 text-[hsl(280,13.34%,24.04%)] hover:text-teal-700">Log out <span aria-hidden="true">&rarr;</span></Link>
                             </div>
                         </div>
                     </div>

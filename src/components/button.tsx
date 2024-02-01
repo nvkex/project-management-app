@@ -1,4 +1,4 @@
-import { ComponentPropsWithoutRef, FunctionComponent } from "react";
+import { type ComponentPropsWithoutRef, type FunctionComponent } from "react";
 
 type ButtonProps = ComponentPropsWithoutRef<'button'> & {
     variant?: string

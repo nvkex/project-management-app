@@ -1,6 +1,7 @@
 import Head from "next/head";
-import { Prisma } from "@prisma/client";
+import { type Prisma } from "@prisma/client";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 import Button from "~/components/button";
 import Input from "~/components/input";
@@ -10,8 +11,6 @@ import BaseLayout from "~/layout/base";
 import { api } from "~/utils/api";
 import { UserWithAvatar } from "~/components/userAvatar";
 import CreateProject from "~/components/modals/createProject";
-import { useEffect, useState } from "react";
-import { EllipsisVerticalIcon } from "@heroicons/react/20/solid";
 
 type ProjectItem = Prisma.ProjectGetPayload<{
     include: {
@@ -54,7 +53,7 @@ export default function Projects() {
         } else {
             setFilteredProjects(data)
         }
-    }, [filterText])
+    }, [filterText, data])
 
     useEffect(() => {
         setFilteredProjects(data)

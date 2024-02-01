@@ -1,4 +1,4 @@
-import { Fragment, FunctionComponent } from 'react'
+import { Fragment, type FunctionComponent } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
 

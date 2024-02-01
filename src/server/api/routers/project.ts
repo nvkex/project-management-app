@@ -77,8 +77,8 @@ export const projectRouter = createTRPCRouter({
                 }
             });
         }),
-    addMember: protectedProcedure
-        .input(z.object({ projectId: z.string(), userId: z.string() }))
+    addMembers: protectedProcedure
+        .input(z.object({ projectId: z.string(), userIds: z.array(z.string()) }))
         .mutation(({ ctx, input }) => {
             return ctx.db.project.update({
                 where: {
@@ -87,11 +87,9 @@ export const projectRouter = createTRPCRouter({
                 },
                 data: {
                     members: {
-                        create: [
-                            {
-                                user: { connect: { id: input.userId } },
-                            }
-                        ]
+                        create: input.userIds.map(userId => ({
+                            user: { connect: { id: userId } },
+                        }))
                     }
                 },
             });

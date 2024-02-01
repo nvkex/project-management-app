@@ -1,5 +1,5 @@
 import { Dialog, Transition } from '@headlessui/react'
-import { Fragment, FunctionComponent } from 'react'
+import { Fragment, type FunctionComponent } from 'react'
 
 type CustomModalProps = {
     isOpen: boolean,

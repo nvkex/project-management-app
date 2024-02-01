@@ -1,5 +1,5 @@
 
-import { Bars2Icon, ChevronDoubleDownIcon, ChevronDoubleUpIcon, ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
+import { Bars2Icon, ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
 
 const PRIORITY = {
     LOW: "LOW",

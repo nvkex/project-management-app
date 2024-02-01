@@ -1,10 +1,9 @@
-import { Prisma } from "@prisma/client";
+import { type Prisma } from "@prisma/client";
 import { z } from "zod";
 
 import {
     createTRPCRouter,
-    protectedProcedure,
-    publicProcedure,
+    protectedProcedure
 } from "~/server/api/trpc";
 
 export const userRouter = createTRPCRouter({
@@ -54,15 +53,15 @@ export const userRouter = createTRPCRouter({
         .mutation(({ ctx, input }) => {
             const data: Prisma.UserUpdateInput = {}
             if (input.name)
-                data['name'] = input.name
+                data.name = input.name
             if (input.department)
-                data['department'] = input.department
+                data.department = input.department
             if (input.organization)
-                data['organization'] = input.organization
+                data.organization = input.organization
             if (input.location)
-                data['location'] = input.location
+                data.location = input.location
             if (input.shade)
-                data['shade'] = input.shade
+                data.shade = input.shade
 
             return ctx.db.user.update({
                 where: {

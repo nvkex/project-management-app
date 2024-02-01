@@ -1,4 +1,4 @@
-import { ComponentPropsWithoutRef, FunctionComponent } from "react";
+import { type ComponentPropsWithoutRef, type FunctionComponent } from "react";
 
 type InputProps = ComponentPropsWithoutRef<'textarea'> & {
     classes?: string

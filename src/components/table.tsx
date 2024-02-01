@@ -1,4 +1,5 @@
-import { FunctionComponent } from "react";
+/* eslint-disable @typescript-eslint/consistent-indexed-object-style */
+import { type FunctionComponent } from "react";
 
 interface DataItem {
     [key: string]: any;

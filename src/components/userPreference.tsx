@@ -1,4 +1,4 @@
-import { FunctionComponent, useEffect, useState } from 'react';
+import { type FunctionComponent, useEffect, useState } from 'react';
 import { ClipboardDocumentCheckIcon, ClipboardIcon } from '@heroicons/react/24/outline';
 import { BriefcaseIcon, BuildingOfficeIcon, EnvelopeIcon, HeartIcon, MapPinIcon, PaintBrushIcon } from '@heroicons/react/20/solid';
 
@@ -7,7 +7,7 @@ import Button from '~/components/button';
 import Input from '~/components/input';
 import PageHead from '~/components/pageHead';
 import { UserWithAvatar } from '~/components/userAvatar';
-import { RouterInputs, api, type RouterOutputs } from '~/utils/api';
+import { type RouterInputs, api, type RouterOutputs } from '~/utils/api';
 import { priorityBadgeVariantConfig } from '~/utils/priorityConstants';
 import { STATUS_ENUM, statusBadgeVariantConfig } from '~/utils/statusConstants';
 
@@ -16,7 +16,7 @@ type UserDetailsOutput = RouterOutputs["user"]["getDetailedUserData"];
 type UserPrefUpdateInput = RouterInputs["user"]["updateUserProfile"]
 
 type ColumnPropType = {
-    col?: Number
+    col?: number
     children?: React.ReactNode,
     header?: React.ReactNode,
 
@@ -45,7 +45,7 @@ function UserPreferences(props: { data: UserDetailsOutput, blockEdit?: boolean }
 
     const mutation = api.user.updateUserProfile.useMutation();
 
-    const updateNullOnEmpty = (value: any, callback: (value: any) => void) => {
+    const updateNullOnEmpty = (value: string | null, callback: (value: any) => void) => {
         if (!value || value.length == 0) {
             value = null
         }
@@ -59,10 +59,11 @@ function UserPreferences(props: { data: UserDetailsOutput, blockEdit?: boolean }
             name, department, organization, location, shade
         }
         try {
-            const res = await mutation.mutate(payload);
+            mutation.mutate(payload)
             setHasValuesChanged(false)
         }
         catch (e) {
+            alert("Error!")
             console.log(e)
         }
     }
@@ -70,52 +71,52 @@ function UserPreferences(props: { data: UserDetailsOutput, blockEdit?: boolean }
     useEffect(() => {
         if (
             data && (
-                data.name != name ||
-                data.department != department ||
-                data.organization != organization ||
-                data.location != location ||
+                data.name != name ??
+                data.department != department ??
+                data.organization != organization ??
+                data.location != location ??
                 data.shade != shade
             )
         )
             setHasValuesChanged(true)
         else
             setHasValuesChanged(false)
-    }, [name, department, organization, location, shade])
+    }, [data, name, department, organization, location, shade])
 
     return (
         <>
             <div className="flex justify-between align-middle">
                 <PageHead>User Preferences</PageHead>
                 <div>
-                    <UserWithAvatar userId={data?.id || ''} name={data?.name || ''} shade={data?.shade} disableLink />
+                    <UserWithAvatar userId={data?.id ?? ''} name={data?.name ?? ''} shade={data?.shade} disableLink />
                 </div>
             </div>
             <div className="pt-6 flex gap-4 justify-between h-full">
                 <Column col={30} header={<div className='text-xs text-gray-500 font-medium uppercase pb-1'>About</div>}>
                     <div className='flex gap-4 mt-4 mb-6'>
                         <HeartIcon width={20} className='text-teal-500' />
-                        <Input value={name || ""} onChange={(e) => updateNullOnEmpty(e.target.value, setName)} classes='w-full hover:bg-gray-200' disabled={blockEdit} />
+                        <Input value={name ?? ""} onChange={(e) => updateNullOnEmpty(e.target.value, setName)} classes='w-full hover:bg-gray-200' disabled={blockEdit} />
                     </div>
                     <div className='flex gap-4 my-6'>
                         <BriefcaseIcon width={20} className='text-teal-500' />
-                        <Input value={department || ""} onChange={(e) => updateNullOnEmpty(e.target.value, setDepartment)} classes='w-full hover:bg-gray-200' placeholder={blockEdit ? 'No Department Info' : 'Your Department'} disabled={blockEdit} />
+                        <Input value={department ?? ""} onChange={(e) => updateNullOnEmpty(e.target.value, setDepartment)} classes='w-full hover:bg-gray-200' placeholder={blockEdit ? 'No Department Info' : 'Your Department'} disabled={blockEdit} />
                     </div>
                     <div className='flex gap-4 my-6'>
                         <BuildingOfficeIcon width={20} className='text-teal-500' />
-                        <Input value={organization || ""} onChange={(e) => updateNullOnEmpty(e.target.value, setOrganization)} classes='w-full hover:bg-gray-200' placeholder={blockEdit ? 'No Organization Info' : 'Your Organization'} disabled={blockEdit} />
+                        <Input value={organization ?? ""} onChange={(e) => updateNullOnEmpty(e.target.value, setOrganization)} classes='w-full hover:bg-gray-200' placeholder={blockEdit ? 'No Organization Info' : 'Your Organization'} disabled={blockEdit} />
                     </div>
                     <div className='flex gap-4 my-6'>
                         <MapPinIcon width={20} className='text-teal-500' />
-                        <Input value={location || ""} onChange={(e) => updateNullOnEmpty(e.target.value, setLocation)} classes='w-full hover:bg-gray-200' placeholder={blockEdit ? 'No Location Info' : 'Your Location'} disabled={blockEdit} />
+                        <Input value={location ?? ""} onChange={(e) => updateNullOnEmpty(e.target.value, setLocation)} classes='w-full hover:bg-gray-200' placeholder={blockEdit ? 'No Location Info' : 'Your Location'} disabled={blockEdit} />
                     </div>
                     <div className='flex gap-4 my-6'>
                         <PaintBrushIcon width={20} className='text-teal-500' />
-                        <Input value={shade || ""} onChange={(e) => updateNullOnEmpty(e.target.value, setShade)} classes='w-full hover:bg-gray-200' placeholder={blockEdit ? 'No Shade Info' : 'Profile Shade'} disabled={blockEdit} />
+                        <Input value={shade ?? ""} onChange={(e) => updateNullOnEmpty(e.target.value, setShade)} classes='w-full hover:bg-gray-200' placeholder={blockEdit ? 'No Shade Info' : 'Profile Shade'} disabled={blockEdit} />
                     </div>
                     <div className='text-xs text-gray-500 font-medium uppercase'>Contact</div>
                     <div className='flex gap-4 mt-6 mb-4'>
                         <EnvelopeIcon width={20} className='text-teal-500' />
-                        <Input value={data?.email || ""} onChange={(e) => { }} classes='w-full' placeholder='Email' disabled />
+                        <Input value={data?.email ?? ""} classes='w-full' placeholder='Email' disabled />
                     </div>
                     {!blockEdit && <div className="float-right">
                         <Button variant='primary' onClick={updatePreferences} disabled={!hasValuesChanged}>Save</Button>

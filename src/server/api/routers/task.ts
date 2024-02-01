@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { type Prisma } from "@prisma/client";
 import { z } from "zod";
 
 import {
@@ -54,11 +54,11 @@ export const taskRouter = createTRPCRouter({
             }
 
             if (input.assigneeId)
-                payload['assignee'] = { connect: { id: input.assigneeId } }
+                payload.assignee = { connect: { id: input.assigneeId } }
             if (input.status)
-                payload['status'] = input.status
+                payload.status = input.status
             if (input.priority)
-                payload['priority'] = input.priority
+                payload.priority = input.priority
 
             // Create task
             const res = ctx.db.task.create({
@@ -106,19 +106,19 @@ export const taskRouter = createTRPCRouter({
             const data: Prisma.TaskUpdateInput = {}
 
             if (input.priority)
-                data['priority'] = input.priority
+                data.priority = input.priority
             if (input.status)
-                data['status'] = input.status
+                data.status = input.status
             if (input.title)
-                data['title'] = input.title
+                data.title = input.title
             if (input.description)
-                data['description'] = input.description
+                data.description = input.description
             if (input.startDate)
-                data['startDate'] = input.startDate
+                data.startDate = input.startDate
             if (input.endDate)
-                data['endDate'] = input.endDate
+                data.endDate = input.endDate
             if (input.assigneeId)
-                data['assignee'] = { connect: { id: input.assigneeId } }
+                data.assignee = { connect: { id: input.assigneeId } }
 
             return ctx.db.task.update({
                 where: {

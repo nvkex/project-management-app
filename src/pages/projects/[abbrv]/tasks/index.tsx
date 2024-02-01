@@ -1,21 +1,20 @@
 import Head from "next/head";
-import { Prisma } from "@prisma/client";
+import { type Prisma } from "@prisma/client";
 import { useRouter } from "next/router";
-import NextError from 'next/error';
+import Link from "next/link";
+import { type FunctionComponent, useState } from "react";
+import { CalendarIcon } from "@heroicons/react/20/solid";
 
 import Button from "~/components/button";
 import PageHead from "~/components/pageHead";
 import BaseLayout from "~/layout/base";
-import { RouterOutputs, api } from "~/utils/api";
+import { type RouterOutputs, api } from "~/utils/api";
 import Badge from "~/components/badge";
-import { FunctionComponent, useState } from "react";
 import AddTask from "~/components/modals/createTask";
 import { STATUS_ENUM, statusBadgeVariantConfig } from "~/utils/statusConstants";
 import { priorityBadgeVariantConfig } from "~/utils/priorityConstants";
 import { UserWithAvatar } from "~/components/userAvatar";
 import UpdateTask from "~/components/modals/updateTask";
-import { CalendarIcon } from "@heroicons/react/20/solid";
-import Link from "next/link";
 
 type ProjectByIdOutput = RouterOutputs["project"]["getByAbbrv"];
 
@@ -86,7 +85,7 @@ const TaskListColumn: FunctionComponent<TaskListColumnType> = ({ data, taskStatu
                 <Badge variant={statusBadgeVariantConfig[taskStatus.valueOf()]}>{taskStatus.valueOf()}</Badge>
             </span>
             <div className="overflow-y-auto overflow-x-hidden p-1" style={{ height: "94%" }}>
-                <TaskList status={taskStatus.valueOf()} tasks={data?.tasks || []} onTaskClick={onTaskClick} />
+                <TaskList status={taskStatus.valueOf()} tasks={data?.tasks ?? []} onTaskClick={onTaskClick} />
             </div>
         </div>
     )

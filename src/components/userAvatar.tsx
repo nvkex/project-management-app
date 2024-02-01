@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/consistent-indexed-object-style */
 import Link from "next/link";
-import { FunctionComponent } from "react";
-import { twMerge } from "tailwind-merge";
+import { type FunctionComponent } from "react";
+import { type ClassNameValue, twMerge } from "tailwind-merge";
 
 type UserAvatarProps = {
     name: string,
@@ -14,7 +15,7 @@ type UserWithAvatarProps = {
     shade?: string
 }
 
-const AVATAR_BG_CONFIG: { [key: string]: any } = {
+const AVATAR_BG_CONFIG: { [key: string]: ClassNameValue } = {
     'slate': 'bg-slate-700',
     'gray': 'bg-gray-700',
     'zinc': 'bg-zinc-700',
