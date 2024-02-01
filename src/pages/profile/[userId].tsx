@@ -10,7 +10,7 @@ const ProfileEditPage = () => {
     const userId = useRouter().query.userId as string;
     const { data: sessionData } = useSession();
 
-    if(sessionData?.user.id == userId)
+    if(sessionData?.user.id == userId && typeof window !== "undefined")
         window.location.href = "/profile"
     
     const postQuery = api.user.getUserProfile.useQuery({ userId });
