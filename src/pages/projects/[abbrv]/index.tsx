@@ -13,6 +13,8 @@ import BaseLayout from '~/layout/base';
 import { api, type RouterOutputs } from '~/utils/api';
 import { getArray, groupBy } from '~/utils/utilities';
 import { useSession } from 'next-auth/react';
+import Input from '~/components/atomic/input';
+import { Transition } from '@headlessui/react';
 
 // Type definitions
 type ProjectByIdOutput = RouterOutputs["project"]["getByAbbrv"];
@@ -77,15 +79,44 @@ function ProjectDetails(props: { project: ProjectByIdOutput, loading: boolean })
     const { project } = props;
 
     const [showAddMemberDialog, setShowAddMemberDialog] = useState(false)
+    const [title, setTitle] = useState(project?.title)
 
     const { data: sessionData } = useSession();
+    const mutation = api.project.updateTitle.useMutation();
 
     const isUserLead = sessionData?.user.id === project?.leadUserId
+
+    const hasProjectTitleChanged = (project && project.title !== title) ?? false
+
+    const onProjectTitleChange = () => {
+        if (!project) return
+        if (!title || title.length == 0) {
+            alert("Invalid title")
+            return
+        }
+        mutation.mutate({ title, projectId: project.id })
+    }
 
     return (
         <>
             <div className="flex justify-between align-middle">
-                <PageHead>{project?.title}</PageHead>
+                <PageHead>
+                    <div className='flex gap-2'>
+                        <Input value={title} onChange={(e) => setTitle(e.target.value)} disabled={!isUserLead} />
+                        <Transition
+                            show={hasProjectTitleChanged}
+                            enter="transition-opacity duration-75"
+                            enterFrom="opacity-0"
+                            enterTo="opacity-100"
+                            leave="transition-opacity duration-150"
+                            leaveFrom="opacity-100"
+                            leaveTo="opacity-0"
+                        >
+                            <Button onClick={onProjectTitleChange}>Save</Button>
+                        </Transition>
+                    </div>
+
+                </PageHead>
                 <div>
                     <UserWithAvatar userId={project?.leadUserId ?? ''} name={project?.lead.name ?? ''} shade={project?.lead.shade} />
                 </div>

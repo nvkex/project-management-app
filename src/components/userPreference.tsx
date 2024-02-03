@@ -1,5 +1,5 @@
 import { type FunctionComponent, useEffect, useState } from 'react';
-import { ClipboardDocumentCheckIcon, ClipboardIcon, FaceFrownIcon } from '@heroicons/react/24/outline';
+import { ClipboardDocumentCheckIcon, ClipboardIcon } from '@heroicons/react/24/outline';
 import { BriefcaseIcon, BuildingOfficeIcon, EnvelopeIcon, HeartIcon, MapPinIcon, PaintBrushIcon } from '@heroicons/react/20/solid';
 
 import Badge from '~/components/atomic/badge';
@@ -11,6 +11,7 @@ import { type RouterInputs, api, type RouterOutputs } from '~/utils/api';
 import { priorityBadgeVariantConfig } from '~/utils/priorityConstants';
 import { STATUS_ENUM, statusBadgeVariantConfig } from '~/utils/statusConstants';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 
 // Type definitions
 type UserDetailsOutput = RouterOutputs["user"]["getDetailedUserData"];
@@ -45,6 +46,7 @@ function UserPreferences(props: { data: UserDetailsOutput, blockEdit?: boolean }
     const [shade, setShade] = useState(data?.shade)
 
     const mutation = api.user.updateUserProfile.useMutation();
+    const { data: sessionData } = useSession();
 
     const updateNullOnEmpty = (value: string | null, callback: (value: any) => void) => {
         if (!value || value.length == 0) {
@@ -128,9 +130,16 @@ function UserPreferences(props: { data: UserDetailsOutput, blockEdit?: boolean }
                         {
                             data && data.assignedTasks.length == 0 && (
                                 <div className="w-full text-gray-400">
-                                    <FaceFrownIcon width={50} className='text-gray-200 m-auto py-2'/>
-                                    <div className='text-sm text-center py-2'>Looks like you haven&apos;t started working on anything yet. It&apos;s the perfect time to create some tasks and start making a difference.</div>
-                                    <div className='text-center py-2'><Link href="/projects"><Button>Projects</Button></Link></div>
+                                    <div className='text-3xl py-2 text-center text-gray-200'>(´。＿。｀)</div>
+                                    {
+                                        sessionData?.user.id === data.id ? (
+                                            <>
+                                                <div className='text-sm text-center py-2'>Looks like you haven&apos;t started working on anything yet. It&apos;s the perfect time to create some tasks and start making a difference.</div>
+                                                <div className='text-center py-2'><Link href="/projects"><Button>Projects</Button></Link></div>
+                                            </>
+                                        ) : <div className='text-sm text-center py-2'>Looks like user hasn&apos;t worked on any tasks yet.</div>
+                                    }
+
                                 </div>
                             )
                         }

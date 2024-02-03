@@ -1,3 +1,4 @@
+import { title } from "process";
 import { z } from "zod";
 
 import {
@@ -98,6 +99,17 @@ export const projectRouter = createTRPCRouter({
                         }))
                     }
                 },
+            });
+        }),
+    updateTitle: protectedProcedure
+        .input(z.object({ projectId: z.string(), title: z.string() }))
+        .mutation(({ ctx, input }) => {
+            return ctx.db.project.update({
+                where: {
+                    id: input.projectId,
+                    leadUserId: ctx.session.user.id
+                },
+                data: { title: input.title },
             });
         }),
 })
