@@ -3,7 +3,8 @@ import { z } from "zod";
 
 import {
     createTRPCRouter,
-    protectedProcedure
+    protectedProcedure,
+    publicProcedure
 } from "~/server/api/trpc";
 
 export const userRouter = createTRPCRouter({
@@ -82,5 +83,26 @@ export const userRouter = createTRPCRouter({
                     },
                 },
             });
-        })
+        }),
+    create: publicProcedure
+        .input(z.object({ name: z.string(), email: z.string(), password: z.string() }))
+        .mutation(({ ctx, input }) => {
+            return ctx.db.user.create({
+                data: {
+                    name: input.name,
+                    email: input.email,
+                    password: input.password
+                },
+            });
+        }),
+    authorize: publicProcedure
+        .input(z.object({ email: z.string(), password: z.string() }))
+        .query(({ ctx, input }) => {
+            return ctx.db.user.findFirst({
+                where: {
+                    email: input.email,
+                    password: input.password
+                },
+            });
+        }),
 })

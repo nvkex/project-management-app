@@ -1,5 +1,5 @@
 import { type FunctionComponent, useEffect, useState } from 'react';
-import { ClipboardDocumentCheckIcon, ClipboardIcon } from '@heroicons/react/24/outline';
+import { ClipboardDocumentCheckIcon, ClipboardIcon, FaceFrownIcon } from '@heroicons/react/24/outline';
 import { BriefcaseIcon, BuildingOfficeIcon, EnvelopeIcon, HeartIcon, MapPinIcon, PaintBrushIcon } from '@heroicons/react/20/solid';
 
 import Badge from '~/components/badge';
@@ -10,6 +10,7 @@ import { UserWithAvatar } from '~/components/userAvatar';
 import { type RouterInputs, api, type RouterOutputs } from '~/utils/api';
 import { priorityBadgeVariantConfig } from '~/utils/priorityConstants';
 import { STATUS_ENUM, statusBadgeVariantConfig } from '~/utils/statusConstants';
+import Link from 'next/link';
 
 // Type definitions
 type UserDetailsOutput = RouterOutputs["user"]["getDetailedUserData"];
@@ -71,10 +72,10 @@ function UserPreferences(props: { data: UserDetailsOutput, blockEdit?: boolean }
     useEffect(() => {
         if (
             data && (
-                data.name != name ??
-                data.department != department ??
-                data.organization != organization ??
-                data.location != location ??
+                data.name != name ||
+                data.department != department ||
+                data.organization != organization ||
+                data.location != location ||
                 data.shade != shade
             )
         )
@@ -124,6 +125,15 @@ function UserPreferences(props: { data: UserDetailsOutput, blockEdit?: boolean }
                 </Column>
                 <Column col={70} header={<div className='text-xs text-gray-500 font-medium uppercase pb-1'>Worked ON</div>}>
                     <div>
+                        {
+                            data && data.assignedTasks.length == 0 && (
+                                <div className="w-full text-gray-400">
+                                    <FaceFrownIcon width={50} className='text-gray-200 m-auto py-2'/>
+                                    <div className='text-sm text-center py-2'>Looks like you haven&apos;t started working on anything yet. It&apos;s the perfect time to create some tasks and start making a difference.</div>
+                                    <div className='text-center py-2'><Link href="/projects"><Button>Projects</Button></Link></div>
+                                </div>
+                            )
+                        }
                         {
                             data && data.assignedTasks.map((task, ti) => (
                                 <div key={`user-task-list-${ti}`} className='bg-gray-50 my-4 p-4 rounded-md hover:shadow-md'>

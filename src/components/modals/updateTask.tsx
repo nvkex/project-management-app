@@ -73,8 +73,8 @@ const UpdateTask: FunctionComponent<UpdateTaskProps> = ({ task, project, isOpen,
             payload.assigneeId = assignee.value
         try {
             mutation.mutate(payload)
-            onSuccess && onSuccess()
             setIsOpen && setIsOpen(false)
+            onSuccess && onSuccess()
         }
         catch (e) {
             alert("Error")
@@ -108,15 +108,15 @@ const UpdateTask: FunctionComponent<UpdateTaskProps> = ({ task, project, isOpen,
     }, [task])
 
     return project && (
-        <CustomModal title="Create Task" isOpen={isOpen} setIsOpen={setIsOpen}>
+        <CustomModal title="Update Task" isOpen={isOpen} setIsOpen={setIsOpen}>
             <div className="mt-2 flex flex-col gap-3">
                 <Input style={{ width: "100%" }} value={title ?? ""} onChange={(e) => setTitle(e.target.value)} placeholder="Title" />
                 <TextArea style={{ width: "100%" }} value={description ?? ""} onChange={(e) => setDescription(e.target.value)} placeholder="Description" />
                 <Input style={{ width: "100%" }} value={startDate ?? ""} onChange={(e) => setStartDate(e.target.value)} placeholder="Start Date: MM/DD/YYYY" />
                 <Input style={{ width: "100%" }} value={endDate ?? ""} onChange={(e) => setEndDate(e.target.value)} placeholder="End Date: MM/DD/YYYY" />
-                <Dropdown id="update-task-assignee" placeholder="Add Assignee" options={memberList} selected={assignee} onSelect={setAssignee} selectedLabel={selected => <UserWithAvatar name={selected?.label ?? ""} userId={selected?.value ?? ""} shade={selected?.shade} disableLink />} />
-                <Dropdown id="update-task-status" options={STATUS_LIST_AS_OPTIONS} selected={status} onSelect={setStatus} selectedLabel={selected => <span>Status: <Badge variant={getStatusBadgeVariant()}>{selected?.value}</Badge></span>} />
-                <Dropdown id="update-task-priority" options={PRIORITY_LIST_AS_OPTIONS} selected={priority} onSelect={setPriority} selectedLabel={selected => <span>Priority: <Badge variant={getPriorityBadgeVariant()}>{selected?.value}</Badge></span>} />
+                <Dropdown id="update-task-assignee" placeholder="Add Assignee" options={memberList} selected={assignee} onSelect={setAssignee} selectedLabel={selected => <UserWithAvatar key={`UT-assignee-${selected?.value}`} name={selected?.label ?? ""} userId={selected?.value ?? ""} shade={selected?.shade} disableLink />} />
+                <Dropdown id="update-task-status" options={STATUS_LIST_AS_OPTIONS} selected={status} onSelect={setStatus} selectedLabel={selected => <span>Status: <Badge key={`UT-badge-status-${selected?.value}`}  variant={getStatusBadgeVariant()}>{selected?.value}</Badge></span>} />
+                <Dropdown id="update-task-priority" options={PRIORITY_LIST_AS_OPTIONS} selected={priority} onSelect={setPriority} selectedLabel={selected => <span>Priority: <Badge key={`UT-badge-priority-${selected?.value}`}  variant={getPriorityBadgeVariant()}>{selected?.value}</Badge></span>} />
             </div>
             <div className="mt-6 gap-2 sm:flex sm:flex-row-reverse">
                 <Button onClick={onSubmit} variant="primary">Submit</Button>

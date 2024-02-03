@@ -6,6 +6,7 @@ import {
   type NextAuthOptions,
 } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
+import CredentialsProvider from "next-auth/providers/credentials"
 
 import { env } from "~/env";
 import { db } from "~/server/db";
@@ -20,15 +21,22 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: DefaultSession["user"] & {
       id: string;
-      // ...other properties
-      // role: UserRole;
     };
   }
-
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+}
+declare module "next-auth/jwt" {
+  interface JWT {
+    name: string,
+    email: string,
+    picture: any,
+    sub: string,
+    user: {
+      id: string,
+    },
+    iat: number,
+    exp: number,
+    jti: string
+  }
 }
 
 /**
@@ -38,20 +46,67 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
+    jwt: async ({ token, user }) => {
+      user && (token.user = user);
+      return Promise.resolve(token);
+    },
+    session: ({ session, token }) => {
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: token.user.id,
+        }
+      }
+    },
   },
   adapter: PrismaAdapter(db),
+  jwt: {
+    maxAge: 60 * 60 * 24 * 30
+  },
+  session: {
+    strategy: "jwt",
+  },
   providers: [
     GithubProvider({
       clientId: env.GITHUB_CLIENT_ID,
       clientSecret: env.GITHUB_CLIENT_SECRET,
     }),
+    CredentialsProvider({
+      id: "custom-signup",
+      type: "credentials",
+      name: 'Credentials',
+      credentials: {
+        email: { label: "Email", type: "email", placeholder: "your@email.com" },
+        password: { label: "Password", type: "password" }
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials.password) {
+          return null; // Invalid credentials, return null
+        }
+
+        const payload = {
+          email: credentials.email,
+          password: credentials.password,
+        };
+
+        try {
+          const user = await db.user.findFirst({
+            where: payload,
+          });
+
+          if (!user) {
+            throw new Error("Invalid email or password");
+          }
+
+          return Promise.resolve(user); // Valid credentials, resolve with user object
+        } catch (error) {
+          console.error("Error during authentication:", error);
+          return null; // Return null in case of any error
+        }
+      }
+
+    })
     /**
      * ...add more providers here.
      *

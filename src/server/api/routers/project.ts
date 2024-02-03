@@ -9,7 +9,13 @@ export const projectRouter = createTRPCRouter({
     getAll: protectedProcedure
         .query(({ ctx }) => {
             return ctx.db.project.findMany({
-                where: { leadUserId: ctx.session.user.id },
+                where: {
+                    members: {
+                        some: {
+                            userId: ctx.session.user.id
+                        }
+                    }
+                },
                 include: {
                     members: true,
                     lead: true

@@ -1,6 +1,9 @@
 import { signIn, useSession } from "next-auth/react";
 import Head from "next/head";
-import { type FunctionComponent } from "react";
+import Link from "next/link";
+import { useState, type FunctionComponent } from "react";
+import Button from "~/components/button";
+import RegisterUser from "~/components/modals/registerUser";
 
 export default function Home() {
   return (
@@ -51,6 +54,7 @@ const InfoCard: FunctionComponent<Props> = ({ children }) => {
 
 function AuthShowcase() {
   const { data: sessionData } = useSession();
+  const [isRegisterUserModalOpen, setIsRegisterUserModalOpen] = useState(false)
 
   const goToDashboard = () => {
     window.location.href = '/projects'
@@ -58,18 +62,21 @@ function AuthShowcase() {
 
   const bannerText = sessionData ? `Signed in as ${sessionData.user?.name}` : "Start managing your tasks with just one-click"
   const buttonText = sessionData ? "Manage Projects" : "Sign in"
-  const buttonOnClick = sessionData ? goToDashboard : () => void signIn()
+  const loggedIn = sessionData != null
+  const buttonOnClick = loggedIn ? goToDashboard : () => void signIn()
 
   return (
     <>
+      <RegisterUser isOpen={isRegisterUserModalOpen} setIsOpen={setIsRegisterUserModalOpen} />
       <div className="bg-teal-100 w-full text-center py-4 text-[hsl(280,13.34%,24.04%)] text-lg">
         {bannerText}
       </div>
-      <div className="flex flex-col items-center gap-2">
-        <div className="flex flex-col items-center justify-center gap-4">
-          <button onClick={buttonOnClick} className="rounded-full bg-white px-10 py-3 shadow-sm font-semibold text-[hsl(280,13.34%,24.04%)] no-underline transition hover:bg-teal-200 hover:shadow-md">
-            {buttonText}
-          </button>
+      <div className="flex items-center gap-2">
+        <div className="flex items-center justify-center gap-4">
+          {
+            !loggedIn && <Button onClick={() => setIsRegisterUserModalOpen(true)}>Signup</Button>
+          }
+          <Button onClick={buttonOnClick}>{buttonText}</Button>
         </div>
       </div>
     </>

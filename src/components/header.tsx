@@ -4,9 +4,8 @@ import Link from "next/link";
 
 export default function Header() {
 
-    const onLogout = () => {
-        void signOut()
-        window.location.href = '/'
+    const onLogout = async () => {
+        await signOut({redirect: true, callbackUrl: "/"})
     }
 
     return (
