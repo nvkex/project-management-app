@@ -47,7 +47,7 @@ const UserAvatar: FunctionComponent<UserAvatarProps> = ({ name, shade = 'teal' }
         AVATAR_BG_CONFIG[shade]
     )
 
-    const initials = name.split(" ")
+    const initials = name.trim().split(" ")
         .map(s => s[0])
         .reduce((a, b = "") => a + b)
     return (

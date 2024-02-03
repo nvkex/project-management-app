@@ -1,8 +1,9 @@
-import Header from "~/components/header";
 import { type FunctionComponent } from "react";
 import { type UseTRPCQueryResult } from "@trpc/react-query/shared";
 import { type TRPCClientErrorLike } from "@trpc/client";
 import { ExclamationCircleIcon } from "@heroicons/react/20/solid";
+
+import Header from "~/components/sections/header";
 
 type Props = {
     children: React.ReactNode;

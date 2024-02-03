@@ -12,6 +12,7 @@ import { UserWithAvatar } from '~/components/atomic/userAvatar';
 import BaseLayout from '~/layout/base';
 import { api, type RouterOutputs } from '~/utils/api';
 import { getArray, groupBy } from '~/utils/utilities';
+import { useSession } from 'next-auth/react';
 
 // Type definitions
 type ProjectByIdOutput = RouterOutputs["project"]["getByAbbrv"];
@@ -60,7 +61,7 @@ const MembersTable: FunctionComponent<MembersTableProps> = ({ members = [] }) =>
     )
 }
 
-const TasksTableByStatus: FunctionComponent<TasksTableProps> = ({ tasks = [], keyColumn, label }) => {
+const GroupedTaskTable: FunctionComponent<TasksTableProps> = ({ tasks = [], keyColumn, label }) => {
     const groupedTasks = getArray(groupBy(tasks, keyColumn), keyColumn, 'tasks')
     const columns = [
         { name: label, cell: (row: GroupedTaskItemByStatus) => row[keyColumn] },
@@ -76,6 +77,10 @@ function ProjectDetails(props: { project: ProjectByIdOutput, loading: boolean })
     const { project } = props;
 
     const [showAddMemberDialog, setShowAddMemberDialog] = useState(false)
+
+    const { data: sessionData } = useSession();
+
+    const isUserLead = sessionData?.user.id === project?.leadUserId
 
     return (
         <>
@@ -98,13 +103,13 @@ function ProjectDetails(props: { project: ProjectByIdOutput, loading: boolean })
                         <MembersTable members={project?.members ?? []} />
                     </div>
                     <div className='absolute bottom-4 left-4'>
-                        <Button onClick={() => setShowAddMemberDialog(true)}>Add Member</Button>
+                        <Button onClick={() => isUserLead && setShowAddMemberDialog(true)} disabled={!isUserLead}>Add Member</Button>
                     </div>
                 </div>
                 <div className='relative bg-gray-50 p-4 shadow-sm rounded-md h-80' style={{ width: 400 }}>
                     <div className='font-medium text-[hsl(280,13.34%,40.04%)] mb-2'>Task Distribution</div>
                     <div className="overflow-y-auto overflow-x-hidden my-1" style={{ height: 212 }}>
-                        <TasksTableByStatus tasks={project?.tasks ?? []} keyColumn="status" label="Status" />
+                        <GroupedTaskTable tasks={project?.tasks ?? []} keyColumn="status" label="Status" />
                     </div>
                     <div className='absolute bottom-4 left-4'>
                         <Link href={`/projects/${project?.abbreviation}/tasks`}>
@@ -115,7 +120,7 @@ function ProjectDetails(props: { project: ProjectByIdOutput, loading: boolean })
                 <div className='relative bg-gray-50 p-4 shadow-sm rounded-md h-80' style={{ width: 400 }}>
                     <div className='font-medium text-[hsl(280,13.34%,40.04%)] mb-2'>Priority Breakdown</div>
                     <div className="overflow-y-auto overflow-x-hidden my-1" style={{ height: 212 }}>
-                        <TasksTableByStatus tasks={project?.tasks ?? []} keyColumn="priority" label="Priority" />
+                        <GroupedTaskTable tasks={project?.tasks ?? []} keyColumn="priority" label="Priority" />
                     </div>
                 </div>
             </div>

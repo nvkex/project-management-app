@@ -24,7 +24,7 @@ type TaskItem = Prisma.TaskGetPayload<{
     }
 }>
 
-// -----------Task Card-----------
+// -----------Task Card List-----------
 type TaskListProps = {
     tasks: Array<TaskItem>,
     status: string,
@@ -86,7 +86,7 @@ const TaskListColumn: FunctionComponent<TaskListColumnType> = ({ data, taskStatu
             <span className='pl-1 font-medium text-[hsl(280,13.34%,40.04%)]'>
                 <Badge variant={statusBadgeVariantConfig[taskStatus.valueOf()]}>{taskStatus.valueOf()}</Badge>
             </span>
-            <div className="overflow-y-auto overflow-x-hidden p-1" style={{ height: "94%" }}>
+            <div className="overflow-y-auto overflow-x-hidden p-1 mt-1" style={{ height: "94%" }}>
                 <TaskList status={taskStatus.valueOf()} tasks={data?.tasks ?? []} onTaskClick={onTaskClick} />
             </div>
         </div>
