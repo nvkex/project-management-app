@@ -1,6 +1,6 @@
 import { type FunctionComponent, useEffect, useState } from "react";
-import Button from "../button";
-import Input from "../input";
+import Button from "../atomic/button";
+import Input from "../atomic/input";
 import { type RouterInputs, api } from "~/utils/api";
 import CustomModal from "./customModal";
 

@@ -1,9 +1,9 @@
 import { type FunctionComponent, useEffect, useState } from "react";
-import Button from "../button";
-import Input from "../input";
+import Button from "../atomic/button";
+import Input from "../atomic/input";
 import { api } from "~/utils/api";
 import CustomModal from "./customModal";
-import TextArea from "../textArea";
+import TextArea from "../atomic/textArea";
 
 type CreateProjectProps = {
     isOpen: boolean,

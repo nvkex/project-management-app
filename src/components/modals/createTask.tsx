@@ -1,14 +1,14 @@
 import { type FunctionComponent, useEffect, useState } from "react";
-import Button from "../button";
-import Input from "../input";
+import Button from "../atomic/button";
+import Input from "../atomic/input";
 import { type RouterInputs, type RouterOutputs, api } from "~/utils/api";
 import CustomModal from "./customModal";
-import Dropdown, { type DropdownOptionsType } from "../dropdown";
+import Dropdown, { type DropdownOptionsType } from "../derived/dropdown";
 import { STATUS, STATUS_LIST_AS_OPTIONS, statusBadgeVariantConfig } from "~/utils/statusConstants";
 import { PRIORITY, PRIORITY_LIST_AS_OPTIONS, priorityBadgeVariantConfig } from "~/utils/priorityConstants";
-import Badge from "../badge";
-import { UserWithAvatar } from "../userAvatar";
-import TextArea from "../textArea";
+import Badge from "../atomic/badge";
+import { UserWithAvatar } from "../atomic/userAvatar";
+import TextArea from "../atomic/textArea";
 
 type ProjectByIdOutput = RouterOutputs["project"]["getByAbbrv"];
 type CreateTaskPayload = RouterInputs["task"]["create"]

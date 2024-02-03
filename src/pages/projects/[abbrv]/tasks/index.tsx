@@ -5,15 +5,15 @@ import Link from "next/link";
 import { type FunctionComponent, useState } from "react";
 import { CalendarIcon } from "@heroicons/react/20/solid";
 
-import Button from "~/components/button";
-import PageHead from "~/components/pageHead";
+import Button from "~/components/atomic/button";
+import PageHead from "~/components/sections/pageHead";
 import BaseLayout from "~/layout/base";
 import { type RouterOutputs, api } from "~/utils/api";
-import Badge from "~/components/badge";
+import Badge from "~/components/atomic/badge";
 import AddTask from "~/components/modals/createTask";
 import { STATUS_ENUM, statusBadgeVariantConfig } from "~/utils/statusConstants";
 import { priorityBadgeVariantConfig } from "~/utils/priorityConstants";
-import { UserWithAvatar } from "~/components/userAvatar";
+import { UserWithAvatar } from "~/components/atomic/userAvatar";
 import UpdateTask from "~/components/modals/updateTask";
 
 type ProjectByIdOutput = RouterOutputs["project"]["getByAbbrv"];
@@ -24,15 +24,10 @@ type TaskItem = Prisma.TaskGetPayload<{
     }
 }>
 
+// -----------Task Card-----------
 type TaskListProps = {
     tasks: Array<TaskItem>,
     status: string,
-    onTaskClick: (task: TaskItem) => void
-}
-
-type TaskListColumnType = {
-    data?: ProjectByIdOutput,
-    taskStatus: STATUS_ENUM,
     onTaskClick: (task: TaskItem) => void
 }
 
@@ -50,20 +45,20 @@ const TaskList: FunctionComponent<TaskListProps> = ({ tasks, status, onTaskClick
                         </div>
                         <div className="flex justify-between my-2">
                             {
-                                task.startDate && <Badge asDiv>
+                                task.startDate ? <Badge asDiv>
                                     <div className="flex align-middle gap-1">
                                         <CalendarIcon height={15} width={15} />
                                         <div>{`${task.startDate.toLocaleDateString()}`}</div>
                                     </div>
-                                </Badge>
+                                </Badge> : <div></div>
                             }
                             {
-                                task.endDate && <Badge asDiv>
+                                task.endDate ? <Badge asDiv>
                                 <div className="flex align-middle gap-1">
                                     <CalendarIcon height={15} width={15} />
                                     <div>{`${task.endDate.toLocaleDateString()}`}</div>
                                 </div>
-                            </Badge>
+                            </Badge> : <div></div>
                             }
                         </div>
                         <div className="my-2">
@@ -76,6 +71,13 @@ const TaskList: FunctionComponent<TaskListProps> = ({ tasks, status, onTaskClick
             }
         </>
     )
+}
+
+// -----------Task Column-----------
+type TaskListColumnType = {
+    data?: ProjectByIdOutput,
+    taskStatus: STATUS_ENUM,
+    onTaskClick: (task: TaskItem) => void
 }
 
 const TaskListColumn: FunctionComponent<TaskListColumnType> = ({ data, taskStatus, onTaskClick }) => {
@@ -91,6 +93,7 @@ const TaskListColumn: FunctionComponent<TaskListColumnType> = ({ data, taskStatu
     )
 }
 
+// -----------Page Container-----------
 export default function Tasks() {
     const abbrv = useRouter().query.abbrv as string;
     const postQuery = api.project.getByAbbrv.useQuery({ abbrv: abbrv || "" });

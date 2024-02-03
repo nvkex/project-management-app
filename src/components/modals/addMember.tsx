@@ -1,9 +1,9 @@
 import { type FunctionComponent, useEffect, useState } from "react";
-import Button from "../button";
+import Button from "../atomic/button";
 import { api } from "~/utils/api";
 import CustomModal from "./customModal";
-import Dropdown, { type DropdownOptionsType } from "../dropdown";
-import { UserWithAvatar } from "../userAvatar";
+import Dropdown, { type DropdownOptionsType } from "../derived/dropdown";
+import { UserWithAvatar } from "../atomic/userAvatar";
 
 type AddMemberProps = {
     projectId?: string,

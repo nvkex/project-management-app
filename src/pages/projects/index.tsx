@@ -3,13 +3,13 @@ import { type Prisma } from "@prisma/client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-import Button from "~/components/button";
-import Input from "~/components/input";
-import PageHead from "~/components/pageHead";
-import Table from "~/components/table";
+import Button from "~/components/atomic/button";
+import Input from "~/components/atomic/input";
+import PageHead from "~/components/sections/pageHead";
+import Table from "~/components/atomic/table";
 import BaseLayout from "~/layout/base";
 import { api } from "~/utils/api";
-import { UserWithAvatar } from "~/components/userAvatar";
+import { UserWithAvatar } from "~/components/atomic/userAvatar";
 import CreateProject from "~/components/modals/createProject";
 
 type ProjectItem = Prisma.ProjectGetPayload<{

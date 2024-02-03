@@ -4,11 +4,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { type FunctionComponent, useState } from 'react';
 
-import Button from '~/components/button';
+import Button from '~/components/atomic/button';
 import AddMember from '~/components/modals/addMember';
-import PageHead from '~/components/pageHead';
-import Table from '~/components/table';
-import { UserWithAvatar } from '~/components/userAvatar';
+import PageHead from '~/components/sections/pageHead';
+import Table from '~/components/atomic/table';
+import { UserWithAvatar } from '~/components/atomic/userAvatar';
 import BaseLayout from '~/layout/base';
 import { api, type RouterOutputs } from '~/utils/api';
 import { getArray, groupBy } from '~/utils/utilities';

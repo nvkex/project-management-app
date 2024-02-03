@@ -2,11 +2,11 @@ import { type FunctionComponent, useEffect, useState } from 'react';
 import { ClipboardDocumentCheckIcon, ClipboardIcon, FaceFrownIcon } from '@heroicons/react/24/outline';
 import { BriefcaseIcon, BuildingOfficeIcon, EnvelopeIcon, HeartIcon, MapPinIcon, PaintBrushIcon } from '@heroicons/react/20/solid';
 
-import Badge from '~/components/badge';
-import Button from '~/components/button';
-import Input from '~/components/input';
-import PageHead from '~/components/pageHead';
-import { UserWithAvatar } from '~/components/userAvatar';
+import Badge from '~/components/atomic/badge';
+import Button from '~/components/atomic/button';
+import Input from '~/components/atomic/input';
+import PageHead from '~/components/sections/pageHead';
+import { UserWithAvatar } from '~/components/atomic/userAvatar';
 import { type RouterInputs, api, type RouterOutputs } from '~/utils/api';
 import { priorityBadgeVariantConfig } from '~/utils/priorityConstants';
 import { STATUS_ENUM, statusBadgeVariantConfig } from '~/utils/statusConstants';
