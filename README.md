@@ -1,28 +1,68 @@
-# Create T3 App
+# Task Management Application Readme
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+## Overview
 
-## What's next? How do I make an app with this?
+This Next.js application is a task management interface designed to streamline the process of task creation, assignment, and tracking within a team. It integrates with a serverless backend deployed on AWS using SST (Serverless Stack) and utilizes Supabase as the database for storing and managing task-related data.
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+## Features
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+### 1. Task Management Interface
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+- **Task Creation:** Users can create new tasks with detailed descriptions, deadlines, and priorities/tags.
+- **Task Assignment:** Team members can be assigned to specific tasks, facilitating collaboration.
+- **Task Tracking:** Users can monitor the progress of tasks, helping to ensure project deadlines are met.
 
-## Learn More
+### 2. User Profile and Project Settings
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+- **User Profile:** Team members can manage their personal information and preferences.
+- **Project Settings:** Users have the ability to customize project-specific settings, enhancing the application's flexibility.
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+### 3. Serverless Backend with SST
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+The application is backed by a serverless architecture using SST. The backend is configured to handle all functionalities required by the Next.js application. It is deployed on AWS for scalability and reliability.
 
-## How do I deploy this?
+### 4. Database Integration with Supabase
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+Supabase is integrated as the database for the application. The database schema is designed to meet the application's requirements, and user authentication is implemented with Email and Password login. CRUD (Create, Read, Update, Delete) operations are seamlessly performed within the application, interacting with the Supabase database.
+
+## Deployment
+
+To deploy the application, follow these steps:
+
+1. **Clone the Repository:**
+```bash
+git clone https://github.com/your-username/task-management-app.git
+cd task-management-app
+```
+
+
+2. **Install Dependencies:**
+```bash
+npm install
+```
+
+3. Configure SST:
+Update the SST configuration files (sst.json) with your AWS credentials and necessary configurations.
+
+4. Configure Supabase:
+Set up a Supabase project and update the application code with the relevant Supabase connection details.
+
+5. Build and Deploy:
+
+```bash
+npm run build
+npm run deploy
+```
+
+This will build the Next.js application and deploy the serverless backend on AWS.
+
+## Access the Application:
+Once deployment is successful, access the application through the provided URL.
+
+## Development
+To run the application locally for development purposes, use the following command:
+
+```bash
+npm run dev
+```
+This will start the development server, and you can access the application at http://localhost:3000.
