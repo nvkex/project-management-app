@@ -12,119 +12,139 @@ import { type Prisma } from "@prisma/client";
 import TextArea from "../atomic/textArea";
 
 type ProjectByIdOutput = RouterOutputs["project"]["getByAbbrv"];
-type UpdateTaskPayload = RouterInputs["task"]["updateProperties"]
-type TaskPayload = Prisma.TaskGetPayload<{ include: { assignee: true } }>
+type UpdateTaskPayload = RouterInputs["task"]["updateProperties"];
+type TaskPayload = Prisma.TaskGetPayload<{ include: { assignee: true } }>;
 
 type UpdateTaskProps = {
-    task: TaskPayload | null,
-    project?: ProjectByIdOutput,
-    isOpen: boolean,
-    setIsOpen: (value: boolean) => void,
-    onSuccess?: () => void
-}
+  task: TaskPayload | null;
+  project?: ProjectByIdOutput;
+  isOpen: boolean;
+  setIsOpen: (value: boolean) => void;
+  onSuccess?: () => void;
+};
 
 const UpdateTask: FunctionComponent<UpdateTaskProps> = ({ task, project, isOpen, setIsOpen, onSuccess = () => null }) => {
-    const [title, setTitle] = useState(task ? task.title : null)
-    const [description, setDescription] = useState(task ? task.description : null)
-    const [startDate, setStartDate] = useState<string | null>(null)
-    const [endDate, setEndDate] = useState<string | null>(null)
-    const [assignee, setAssignee] = useState<DropdownOptionsType | null>(null)
-    const [status, setStatus] = useState<DropdownOptionsType | null>(null)
-    const [priority, setPriority] = useState<DropdownOptionsType | null>(null)
+  // State for task properties
+  const [title, setTitle] = useState(task ? task.title : null);
+  const [description, setDescription] = useState(task ? task.description : null);
+  const [startDate, setStartDate] = useState<string | null>(null);
+  const [endDate, setEndDate] = useState<string | null>(null);
+  const [assignee, setAssignee] = useState<DropdownOptionsType | null>(null);
+  const [status, setStatus] = useState<DropdownOptionsType | null>(null);
+  const [priority, setPriority] = useState<DropdownOptionsType | null>(null);
 
-    const mutation = api.task.updateProperties.useMutation();
+  // Mutation hook for updating task properties
+  const mutation = api.task.updateProperties.useMutation();
 
-    const memberList: Array<DropdownOptionsType> = project?.members.map(member => ({ label: member.user.name, value: member.userId })) ?? []
+  // List of project members for the assignee dropdown
+  const memberList: Array<DropdownOptionsType> = project?.members.map((member) => ({ label: member.user.name, value: member.userId })) ?? [];
 
-    const clearState = () => {
-        setTitle('')
-        setDescription('')
-        setAssignee(null)
-        setStatus(null)
-        setPriority(null)
+  // Function to clear input fields
+  const clearState = () => {
+    setTitle("");
+    setDescription("");
+    setAssignee(null);
+    setStatus(null);
+    setPriority(null);
+  };
+
+  // Function to handle form submission
+  const onSubmit = async () => {
+    if (!project ?? !task) return;
+
+    // Parse start and end dates
+    let _startDate = null;
+    let _endDate = null;
+    try {
+      if (startDate) _startDate = new Date(startDate);
+      if (endDate) _endDate = new Date(endDate);
+    } catch {
+      alert("Invalid Date");
     }
 
-    const onSubmit = async () => {
-        if (!project ?? !task)
-            return
-        let _startDate = null
-        let _endDate = null
-        try {
-            if (startDate)
-                _startDate = new Date(startDate)
-            if (endDate)
-                _endDate = new Date(endDate)
-        }
-        catch {
-            alert("Invalid Date")
-        }
+    // Prepare payload for updating task properties
+    const payload: UpdateTaskPayload = {
+      title,
+      description,
+      taskId: task.id,
+      status: status?.value ?? null,
+      assigneeId: assignee?.value ?? null,
+      priority: priority?.value ?? null,
+      startDate: _startDate,
+      endDate: _endDate,
+    };
 
-        const payload: UpdateTaskPayload = {
-            title, description,
-            taskId: task.id,
-            status: status?.value ?? null,
-            assigneeId: assignee?.value ?? null,
-            priority: priority?.value ?? null,
-            startDate: _startDate,
-            endDate: _endDate
-        }
+    if (assignee) payload.assigneeId = assignee.value;
 
-        if (assignee)
-            payload.assigneeId = assignee.value
-        try {
-            mutation.mutate(payload)
-            setIsOpen && setIsOpen(false)
-            onSuccess && onSuccess()
-        }
-        catch (e) {
-            alert("Error")
-            console.log(e)
-        }
+    try {
+      // Call the mutation to update task properties
+      mutation.mutate(payload);
+
+      // Close the modal
+      setIsOpen && setIsOpen(false);
+
+      // Trigger success callback if provided
+      onSuccess && onSuccess();
+    } catch (e) {
+      // Handle errors
+      alert("Error");
+      console.log(e);
     }
+  };
 
-    const getStatusBadgeVariant = () => {
-        return statusBadgeVariantConfig[status?.value ?? STATUS.TODO]
+  // Helper functions to get badge variants
+  const getStatusBadgeVariant = () => {
+    return statusBadgeVariantConfig[status?.value ?? STATUS.TODO];
+  };
+
+  const getPriorityBadgeVariant = () => {
+    return priorityBadgeVariantConfig[priority?.value ?? PRIORITY.LOW];
+  };
+
+  // Clear state when modal is closed
+  useEffect(() => {
+    if (!isOpen) clearState();
+  }, [isOpen]);
+
+  // Set initial state when task changes
+  useEffect(() => {
+    if (task) {
+      setTitle(task.title);
+      setDescription(task.description);
+      setAssignee({ label: task.assignee?.name ?? "", value: task.assignee?.id ?? "" });
+      setStatus({ label: task.status ?? "", value: task.status ?? "" });
+      setPriority({ label: task.priority ?? "", value: task.priority ?? "" });
+      setStartDate(task && task.startDate ? task.startDate.toLocaleDateString() : null);
+      setEndDate(task && task.endDate ? task.endDate.toLocaleDateString() : null);
     }
+  }, [task]);
 
-    const getPriorityBadgeVariant = () => {
-        return priorityBadgeVariantConfig[priority?.value ?? PRIORITY.LOW]
-    }
-
-    useEffect(() => {
-        if (!isOpen)
-            clearState()
-    }, [isOpen])
-
-    useEffect(() => {
-        if (task) {
-            setTitle(task.title)
-            setDescription(task.description)
-            setAssignee({ label: task.assignee?.name ?? "", value: task.assignee?.id ?? "" })
-            setStatus({ label: task.status ?? "", value: task.status ?? "" })
-            setPriority({ label: task.priority ?? "", value: task.priority ?? "" })
-            setStartDate(task && task.startDate ? task.startDate.toLocaleDateString() : null)
-            setEndDate(task && task.endDate ? task.endDate.toLocaleDateString() : null)
-        }
-    }, [task])
-
-    return project && (
-        <CustomModal title="Update Task" isOpen={isOpen} setIsOpen={setIsOpen}>
-            <div className="mt-2 flex flex-col gap-3">
-                <Input style={{ width: "100%" }} value={title ?? ""} onChange={(e) => setTitle(e.target.value)} placeholder="Title" />
-                <TextArea style={{ width: "100%" }} value={description ?? ""} onChange={(e) => setDescription(e.target.value)} placeholder="Description" />
-                <Input style={{ width: "100%" }} value={startDate ?? ""} onChange={(e) => setStartDate(e.target.value)} placeholder="Start Date: MM/DD/YYYY" />
-                <Input style={{ width: "100%" }} value={endDate ?? ""} onChange={(e) => setEndDate(e.target.value)} placeholder="End Date: MM/DD/YYYY" />
-                <Dropdown id="update-task-assignee" placeholder="Add Assignee" options={memberList} selected={assignee} onSelect={setAssignee} selectedLabel={selected => <UserWithAvatar key={`UT-assignee-${selected?.value}`} name={selected?.label ?? ""} userId={selected?.value ?? ""} shade={selected?.shade} disableLink />} />
-                <Dropdown id="update-task-status" options={STATUS_LIST_AS_OPTIONS} selected={status} onSelect={setStatus} selectedLabel={selected => <span>Status: <Badge key={`UT-badge-status-${selected?.value}`}  variant={getStatusBadgeVariant()}>{selected?.value}</Badge></span>} />
-                <Dropdown id="update-task-priority" options={PRIORITY_LIST_AS_OPTIONS} selected={priority} onSelect={setPriority} selectedLabel={selected => <span>Priority: <Badge key={`UT-badge-priority-${selected?.value}`}  variant={getPriorityBadgeVariant()}>{selected?.value}</Badge></span>} />
-            </div>
-            <div className="mt-6 gap-2 sm:flex sm:flex-row-reverse">
-                <Button onClick={onSubmit} variant="primary">Submit</Button>
-                <Button onClick={() => setIsOpen(false)}>Cancel</Button>
-            </div>
-        </CustomModal>
-    )
-}
-
+  return project && (
+    <CustomModal title="Update Task" isOpen={isOpen} setIsOpen={setIsOpen}>
+      <div className="mt-2 flex flex-col gap-3">
+        {/* Input field for task title */}
+        <Input style={{ width: "100%" }} value={title ?? ""} onChange={(e) => setTitle(e.target.value)} placeholder="Title" />
+        {/* Textarea for task description */}
+        <TextArea style={{ width: "100%" }} value={description ?? ""} onChange={(e) => setDescription(e.target.value)} placeholder="Description" />
+        {/* Input field for task start date */}
+        <Input style={{ width: "100%" }} value={startDate ?? ""} onChange={(e) => setStartDate(e.target.value)} placeholder="Start Date: MM/DD/YYYY" />
+        {/* Input field for task end date */}
+        <Input style={{ width: "100%" }} value={endDate ?? ""} onChange={(e) => setEndDate(e.target.value)} placeholder="End Date: MM/DD/YYYY" />
+        {/* Dropdown for assigning a user */}
+        <Dropdown id="update-task-assignee" placeholder="Add Assignee" options={memberList} selected={assignee} onSelect={setAssignee} selectedLabel={(selected) => <UserWithAvatar key={`UT-assignee-${selected?.value}`} name={selected?.label ?? ""} userId={selected?.value ?? ""} shade={selected?.shade} disableLink />} />
+        {/* Dropdown for selecting task status */}
+        <Dropdown id="update-task-status" options={STATUS_LIST_AS_OPTIONS} selected={status} onSelect={setStatus} selectedLabel={(selected) => <span>Status: <Badge key={`UT-badge-status-${selected?.value}`} variant={getStatusBadgeVariant()}>{selected?.value}</Badge></span>} />
+        {/* Dropdown for selecting task priority */}
+        <Dropdown id="update-task-priority" options={PRIORITY_LIST_AS_OPTIONS} selected={priority} onSelect={setPriority} selectedLabel={(selected) => <span>Priority: <Badge key={`UT-badge-priority-${selected?.value}`} variant={getPriorityBadgeVariant()}>{selected?.value}</Badge></span>} />
+      </div>
+      <div className="mt-6 gap-2 sm:flex sm:flex-row-reverse">
+        {/* Submit button */}
+        <Button onClick={onSubmit} variant="primary">Submit</Button>
+        {/* Cancel button */}
+        <Button onClick={() => setIsOpen(false)}>Cancel</Button>
+      </div>
+    </CustomModal>
+  );
+};
 
 export default UpdateTask;
