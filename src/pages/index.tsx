@@ -1,6 +1,5 @@
 import { signIn, useSession } from "next-auth/react";
 import Head from "next/head";
-import Link from "next/link";
 import { useState, type FunctionComponent } from "react";
 import Button from "~/components/atomic/button";
 import RegisterUser from "~/components/modals/registerUser";
