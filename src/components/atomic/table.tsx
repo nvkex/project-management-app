@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/consistent-indexed-object-style */
 import React, { type FunctionComponent } from "react";
 
-interface DataItem {
-  [key: string]: any;
+type DataItem = {
+  [key: PropertyKey]: any;
 }
 
 interface ColumnItem {
   name: string;
-  cell: (row: DataItem) => React.ReactNode;
+  cell: (row: any) => any;
   maxWidth?: string;
 }
 
