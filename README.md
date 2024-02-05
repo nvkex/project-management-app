@@ -153,3 +153,7 @@ To deploy the application, follow these steps:
   ```
 
   This will start the development server, and you can access the application at http://localhost:3000.
+
+## Tests
+
+*No tests added yet. To be done*
