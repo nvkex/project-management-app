@@ -1,9 +1,12 @@
 
 # Project Management Application
 
-  
-
 > Note: App has also been deployed to vercel
+
+### Production URLs
+[Vercel](https://project-management-app-snowy.vercel.app/) (Preferred)
+
+[SST](https://d2zb3ipdo7rzju.cloudfront.net/)
 
 ## Overview
 
@@ -58,86 +61,95 @@ To deploy the application, follow these steps:
 
 1.  **Clone the Repository:**
 
-```bash
+  ```bash
 
-git  clone  https://github.com/your-username/task-management-app.git
+  git  clone  https://github.com/nvkex/project-management-app.git
 
-cd  task-management-app
+  cd  project-management-app
 
-```
+  ```
 
   
   
 
 2. **Install Dependencies:**
 
-```bash
+  ```bash
+  
+  npm install
 
-npm install
+  ```
 
-```
 
   
 
 3. **Configure AWS Credentials:**
 
-Add your AWS credentials to `C:\%USERPROFILE%\.aws\credentials`
+  Add your AWS credentials to `C:\%USERPROFILE%\.aws\credentials`
+
 
   
 
 4. **Configure Supabase:**
 
-- Create a `.env` file in the project directory
-- Set up a Supabase project and update `.env` file with database URL and direct URL. Example below:
-```
-DATABASE_URL="postgres://postgres.[URL]:6543/postgres?pgbouncer=true&connection_limit=1"
-DIRECT_URL="postgres://postgres.[URL]:5432/postgres"
-```
+  - Create a `.env` file in the project directory
+  - Set up a Supabase project and update `.env` file with database URL and direct URL. Example below:
+  ```
+  DATABASE_URL="postgres://postgres.[URL]:6543/postgres?pgbouncer=true&connection_limit=1"
+  DIRECT_URL="postgres://postgres.[URL]:5432/postgres"
+  ```
+
+
+
 
 5. **Configure Authentication Tokens:**
 
-In the `.env` file above add the following tokens:
-- `NEXTAUTH_SECRET` : Random `base64` 32-bit string (Generate using `openssl rand -base64 32`)
-- `NEXTAUTH_URL`: Your app's URL (For dev use: `http://localhost:3000`)
+  In the `.env` file above add the following tokens:
+  - `NEXTAUTH_SECRET` : Random `base64` 32-bit string (Generate using `openssl rand -base64 32`)
+  - `NEXTAUTH_URL`: Your app's URL (For dev use: `http://localhost:3000`)
 
-Generate an OAuth application from Github's `Developer` settings and add the following to `.env` file
-- `GITHUB_CLIENT_ID`
-- `GITHUB_CLIENT_SECRET`
+  Generate an OAuth application from Github's `Developer` settings and add the following to `.env` file
+  - `GITHUB_CLIENT_ID`
+  - `GITHUB_CLIENT_SECRET`
 
-7. Build and Deploy:
-
-  
-
-```bash
-
-npm run build
-
-npm run deploy
-
-```
 
   
 
-This will build the Next.js application and deploy the serverless backend on AWS.
+6. Build and Deploy:
 
   
+
+  ```bash
+
+   npx sst deploy --stage prod
+
+  ```
+
+
+  This will build the Next.js application and deploy the serverless backend on AWS using SST stack.
+
+  *Configuration can be found in `sst.config.ts`*
+  
+
+
 
 ## Access the Application:
 
-Once deployment is successful, access the application through the provided URL.
+  Once deployment is successful, access the application through the URL logged in the output.
 
   
 
 ## Development
 
-To run the application locally for development purposes, use the following command:
+  To run the application locally for development purposes, use the following command:
 
+  *This will use SST to start the local dev environment*
   
 
-```bash
+  ```bash
 
-npm run dev
+  npm run dev
 
-```
+  ```
 
-This will start the development server, and you can access the application at http://localhost:3000.
+  This will start the development server, and you can access the application at http://localhost:3000.
