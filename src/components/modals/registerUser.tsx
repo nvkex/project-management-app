@@ -17,6 +17,7 @@ const RegisterUser: FunctionComponent<RegisterUserProps> = ({ isOpen, setIsOpen,
   const [name, setName] = useState<string | null>(null);
   const [email, setEmail] = useState<string | null>(null);
   const [password, setPassword] = useState<string | null>(null);
+  const [confirmPassword, setConfirmPassword] = useState<string | null>(null);
 
   // Mutation hook for creating a new user
   const mutation = api.user.create.useMutation();
@@ -36,12 +37,17 @@ const RegisterUser: FunctionComponent<RegisterUserProps> = ({ isOpen, setIsOpen,
       return;
     }
 
-    // Prepare payload for creating a new user
-    const payload: CreateUserPayload = {
-      name,
-      email,
-      password,
-    };
+    if (password !== confirmPassword){
+      alert("Password and Confirm Password should match!")
+      return
+    }
+
+      // Prepare payload for creating a new user
+      const payload: CreateUserPayload = {
+        name,
+        email,
+        password,
+      };
 
     try {
       // Call the mutation to create a new user
@@ -73,6 +79,8 @@ const RegisterUser: FunctionComponent<RegisterUserProps> = ({ isOpen, setIsOpen,
         <Input style={{ width: "100%" }} value={email ?? ''} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
         {/* Input field for password */}
         <Input style={{ width: "100%" }} value={password ?? ''} onChange={(e) => setPassword(e.target.value)} type="password" placeholder="Password" />
+        {/* Confirm Password Field */}
+        <Input classes={password != confirmPassword ? 'bg-red-50 focus:ring-red-400' : ''} style={{ width: "100%" }} value={confirmPassword ?? ''} onChange={(e) => setConfirmPassword(e.target.value)} type="password" placeholder="Confirm Password" />
       </div>
       <div className="mt-6 gap-2 sm:flex sm:flex-row-reverse">
         {/* Submit button */}
