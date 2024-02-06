@@ -21,3 +21,8 @@ a {
 .custom-container {
   height: calc(100vh - 57.6px);
 }
+
+:root {
+  --toastify-color-light: #f0fdfa;
+  --toastify-color-dark: #042f2e;
+}
