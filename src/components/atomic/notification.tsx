@@ -2,7 +2,8 @@ import { toast, Bounce, type ToastOptions } from "react-toastify";
 
 const NOTIFICATION_TYPE = {
     success: "success",
-    info: "info"
+    info: "info",
+    error: "error"
 }
 
 type NotificationType = keyof typeof NOTIFICATION_TYPE | null;
