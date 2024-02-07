@@ -2,7 +2,7 @@ import Head from "next/head";
 import { type Prisma } from "@prisma/client";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { type FunctionComponent, useState } from "react";
+import { type FunctionComponent, useState, useEffect } from "react";
 import { CalendarIcon } from "@heroicons/react/20/solid";
 
 import Button from "~/components/atomic/button";
@@ -15,6 +15,7 @@ import { STATUS_ENUM, statusBadgeVariantConfig } from "~/utils/statusConstants";
 import { priorityBadgeVariantConfig } from "~/utils/priorityConstants";
 import { UserWithAvatar } from "~/components/atomic/userAvatar";
 import UpdateTask from "~/components/modals/updateTask";
+import { notification } from "~/components/atomic/notification";
 
 type ProjectByIdOutput = RouterOutputs["project"]["getByAbbrv"];
 
@@ -54,11 +55,11 @@ const TaskList: FunctionComponent<TaskListProps> = ({ tasks, status, onTaskClick
                             }
                             {
                                 task.endDate ? <Badge asDiv>
-                                <div className="flex align-middle gap-1">
-                                    <CalendarIcon height={15} width={15} />
-                                    <div>{`${task.endDate.toLocaleDateString()}`}</div>
-                                </div>
-                            </Badge> : <div></div>
+                                    <div className="flex align-middle gap-1">
+                                        <CalendarIcon height={15} width={15} />
+                                        <div>{`${task.endDate.toLocaleDateString()}`}</div>
+                                    </div>
+                                </Badge> : <div></div>
                             }
                         </div>
                         <div className="my-2">
@@ -97,15 +98,19 @@ const TaskListColumn: FunctionComponent<TaskListColumnType> = ({ data, taskStatu
 export default function Tasks() {
     const abbrv = useRouter().query.abbrv as string;
     const postQuery = api.project.getByAbbrv.useQuery({ abbrv: abbrv || "" });
+    const { data: projectData } = postQuery
 
+    const [data, setData] = useState<ProjectByIdOutput | undefined | null>(projectData)
     const [isAddTaskDialogOpen, setIsAddTaskDialogOpen] = useState(false)
     const [isUpdateTaskDialogOpen, setIsUpdateTaskDialogOpen] = useState(false)
     const [selectedTask, setSelectedTask] = useState<TaskItem | null>(null)
-    
-    const { data } = postQuery;
 
-    const onTaskCreationSuccess = () => {
-        window.location.reload()
+    // const { data } = postQuery;
+
+    const onTaskCreationSuccess = (taskData: TaskItem) => {
+        data?.tasks.push(taskData)
+        setData(data)
+        notification("Task created!", "success", "task-create-msg")  
     }
 
     const onTaskClick = (task: TaskItem) => {
@@ -113,10 +118,17 @@ export default function Tasks() {
         setIsUpdateTaskDialogOpen(true)
     }
 
-    const onTaskUpdateSuccess = () => {
-        setSelectedTask(null)
-        window.location.reload()
+    const onTaskUpdateSuccess = (taskData: TaskItem) => {
+        if (!data) return
+        const idx = data.tasks.findIndex(t => t.id === taskData.id)
+        data.tasks[idx] = taskData
+        setData(data)
+        notification("Task updated!", "success", "task-update-msg")  
     }
+
+    useEffect(() => {
+        setData(projectData)
+    }, [projectData])
 
     return (<>
         <Head>

@@ -10,6 +10,7 @@ import Badge from "../atomic/badge";
 import { UserWithAvatar } from "../atomic/userAvatar";
 import { type Prisma } from "@prisma/client";
 import TextArea from "../atomic/textArea";
+import { notification } from "../atomic/notification";
 
 type ProjectByIdOutput = RouterOutputs["project"]["getByAbbrv"];
 type UpdateTaskPayload = RouterInputs["task"]["updateProperties"];
@@ -20,10 +21,10 @@ type UpdateTaskProps = {
   project?: ProjectByIdOutput;
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
-  onSuccess?: () => void;
+  onSuccess?: (data: TaskPayload) => void;
 };
 
-const UpdateTask: FunctionComponent<UpdateTaskProps> = ({ task, project, isOpen, setIsOpen, onSuccess = () => null }) => {
+const UpdateTask: FunctionComponent<UpdateTaskProps> = ({ task, project, isOpen, setIsOpen, onSuccess = null }) => {
   // State for task properties
   const [title, setTitle] = useState(task ? task.title : null);
   const [description, setDescription] = useState(task ? task.description : null);
@@ -32,6 +33,7 @@ const UpdateTask: FunctionComponent<UpdateTaskProps> = ({ task, project, isOpen,
   const [assignee, setAssignee] = useState<DropdownOptionsType | null>(null);
   const [status, setStatus] = useState<DropdownOptionsType | null>(null);
   const [priority, setPriority] = useState<DropdownOptionsType | null>(null);
+  const [loading, setLoading] = useState(false);
 
   // Mutation hook for updating task properties
   const mutation = api.task.updateProperties.useMutation();
@@ -51,6 +53,9 @@ const UpdateTask: FunctionComponent<UpdateTaskProps> = ({ task, project, isOpen,
   // Function to handle form submission
   const onSubmit = async () => {
     if (!project ?? !task) return;
+    
+    notification("Updating...", "info", "task-updating-msg")
+    setLoading(true)
 
     // Parse start and end dates
     let _startDate = null;
@@ -59,7 +64,7 @@ const UpdateTask: FunctionComponent<UpdateTaskProps> = ({ task, project, isOpen,
       if (startDate) _startDate = new Date(startDate);
       if (endDate) _endDate = new Date(endDate);
     } catch {
-      alert("Invalid Date");
+      notification("Invalid start/end date.", "error", "task-date-failure-msg")
     }
 
     // Prepare payload for updating task properties
@@ -78,18 +83,19 @@ const UpdateTask: FunctionComponent<UpdateTaskProps> = ({ task, project, isOpen,
 
     try {
       // Call the mutation to update task properties
-      mutation.mutate(payload);
-
+      const res = await mutation.mutateAsync(payload);
+      if (!res)
+        notification("Failed to update task! Please try again.", "error", "task-update-failure-msg")
       // Close the modal
       setIsOpen && setIsOpen(false);
-
       // Trigger success callback if provided
-      onSuccess && onSuccess();
+      onSuccess && onSuccess(res);
     } catch (e) {
       // Handle errors
-      alert("Error");
+      notification("Failed to update task! Please try again.", "error", "task-update-failure-msg")
       console.log(e);
     }
+    setLoading(false)
   };
 
   // Helper functions to get badge variants
@@ -123,13 +129,13 @@ const UpdateTask: FunctionComponent<UpdateTaskProps> = ({ task, project, isOpen,
     <CustomModal title="Update Task" isOpen={isOpen} setIsOpen={setIsOpen}>
       <div className="mt-2 flex flex-col gap-3">
         {/* Input field for task title */}
-        <Input style={{ width: "100%" }} value={title ?? ""} onChange={(e) => setTitle(e.target.value)} placeholder="Title" />
+        <Input style={{ width: "100%" }} value={title ?? ""} onChange={(e) => !loading && setTitle(e.target.value)} placeholder="Title" disabled={loading} />
         {/* Textarea for task description */}
-        <TextArea style={{ width: "100%" }} value={description ?? ""} onChange={(e) => setDescription(e.target.value)} placeholder="Description" />
+        <TextArea style={{ width: "100%" }} value={description ?? ""} onChange={(e) => !loading && setDescription(e.target.value)} placeholder="Description" disabled={loading} />
         {/* Input field for task start date */}
-        <Input style={{ width: "100%" }} value={startDate ?? ""} onChange={(e) => setStartDate(e.target.value)} placeholder="Start Date: MM/DD/YYYY" />
+        <Input style={{ width: "100%" }} value={startDate ?? ""} onChange={(e) => !loading && setStartDate(e.target.value)} placeholder="Start Date: MM/DD/YYYY" disabled={loading} />
         {/* Input field for task end date */}
-        <Input style={{ width: "100%" }} value={endDate ?? ""} onChange={(e) => setEndDate(e.target.value)} placeholder="End Date: MM/DD/YYYY" />
+        <Input style={{ width: "100%" }} value={endDate ?? ""} onChange={(e) => !loading && setEndDate(e.target.value)} placeholder="End Date: MM/DD/YYYY" disabled={loading} />
         {/* Dropdown for assigning a user */}
         <Dropdown id="update-task-assignee" placeholder="Add Assignee" options={memberList} selected={assignee} onSelect={setAssignee} selectedLabel={(selected) => <UserWithAvatar key={`UT-assignee-${selected?.value}`} name={selected?.label ?? ""} userId={selected?.value ?? ""} shade={selected?.shade} disableLink />} />
         {/* Dropdown for selecting task status */}
@@ -139,9 +145,9 @@ const UpdateTask: FunctionComponent<UpdateTaskProps> = ({ task, project, isOpen,
       </div>
       <div className="mt-6 gap-2 sm:flex sm:flex-row-reverse">
         {/* Submit button */}
-        <Button onClick={onSubmit} variant="primary">Submit</Button>
+        <Button onClick={onSubmit} variant="primary" disabled={loading}>Submit</Button>
         {/* Cancel button */}
-        <Button onClick={() => setIsOpen(false)}>Cancel</Button>
+        <Button onClick={() => setIsOpen(false)} disabled={loading}>Cancel</Button>
       </div>
     </CustomModal>
   );

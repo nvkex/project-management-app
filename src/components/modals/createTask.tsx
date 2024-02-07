@@ -9,23 +9,26 @@ import { PRIORITY, PRIORITY_LIST_AS_OPTIONS, priorityBadgeVariantConfig } from "
 import Badge from "../atomic/badge";
 import { UserWithAvatar } from "../atomic/userAvatar";
 import TextArea from "../atomic/textArea";
+import { notification } from "../atomic/notification";
 
 type ProjectByIdOutput = RouterOutputs["project"]["getByAbbrv"];
 type CreateTaskPayload = RouterInputs["task"]["create"];
+type CreateTaskResponse = RouterOutputs["task"]["create"];
 
 type AddTaskProps = {
   project?: ProjectByIdOutput;
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
-  onSuccess?: () => void;
+  onSuccess?: (data: CreateTaskResponse) => void;
 };
 
-const AddTask: FunctionComponent<AddTaskProps> = ({ project, isOpen, setIsOpen, onSuccess = () => null }) => {
+const AddTask: FunctionComponent<AddTaskProps> = ({ project, isOpen, setIsOpen, onSuccess = null }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [assignee, setAssignee] = useState<DropdownOptionsType | null>(null);
   const [status, setStatus] = useState(STATUS_LIST_AS_OPTIONS[0]);
   const [priority, setPriority] = useState(PRIORITY_LIST_AS_OPTIONS[0]);
+  const [loading, setLoading] = useState(false);
 
   const mutation = api.task.create.useMutation();
 
@@ -39,8 +42,11 @@ const AddTask: FunctionComponent<AddTaskProps> = ({ project, isOpen, setIsOpen, 
     setPriority(PRIORITY_LIST_AS_OPTIONS[0]);
   };
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     if (!project) return;
+
+    notification("Creating...", "info", "task-updating-msg")
+    setLoading(true)
 
     const payload: CreateTaskPayload = {
       title,
@@ -52,13 +58,17 @@ const AddTask: FunctionComponent<AddTaskProps> = ({ project, isOpen, setIsOpen, 
     };
 
     try {
-      mutation.mutate(payload);
-      onSuccess && onSuccess();
+      const res = await mutation.mutateAsync(payload);
+      if (!res)
+        notification("Failed to create task! Please try again.", "error", "task-create-failure-msg")
+      onSuccess && onSuccess(res);
       setIsOpen && setIsOpen(false);
-    } catch (e) {
-      alert("Error");
+    }
+    catch (e) {
+      notification("Failed to create task! Please try again.", "error", "task-create-failure-msg")
       console.error(e);
     }
+    setLoading(false)
   };
 
   const getStatusBadgeVariant = () => {
@@ -76,8 +86,8 @@ const AddTask: FunctionComponent<AddTaskProps> = ({ project, isOpen, setIsOpen, 
   return project ? (
     <CustomModal title="Create Task" isOpen={isOpen} setIsOpen={setIsOpen}>
       <div className="mt-2 flex flex-col gap-3">
-        <Input style={{ width: "100%" }} value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" />
-        <TextArea style={{ width: "100%" }} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description" />
+        <Input style={{ width: "100%" }} value={title} onChange={(e) => !loading && setTitle(e.target.value)} placeholder="Title" disabled={loading} />
+        <TextArea style={{ width: "100%" }} value={description} onChange={(e) => !loading && setDescription(e.target.value)} placeholder="Description" disabled={loading} />
         <Dropdown
           id="create-task-assignee"
           placeholder="Add Assignee"
@@ -102,7 +112,7 @@ const AddTask: FunctionComponent<AddTaskProps> = ({ project, isOpen, setIsOpen, 
         />
       </div>
       <div className="mt-6 gap-2 sm:flex sm:flex-row-reverse">
-        <Button onClick={onSubmit} variant="primary">
+        <Button onClick={onSubmit} variant="primary" disabled={loading}>
           Submit
         </Button>
         <Button onClick={() => setIsOpen(false)}>Cancel</Button>

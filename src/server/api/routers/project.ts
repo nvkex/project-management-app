@@ -85,8 +85,8 @@ export const projectRouter = createTRPCRouter({
         }),
     addMembers: protectedProcedure
         .input(z.object({ projectId: z.string(), userIds: z.array(z.string()) }))
-        .mutation(({ ctx, input }) => {
-            return ctx.db.project.update({
+        .mutation(async ({ ctx, input }) => {
+            return await ctx.db.project.update({
                 where: {
                     id: input.projectId,
                     leadUserId: ctx.session.user.id
@@ -98,6 +98,17 @@ export const projectRouter = createTRPCRouter({
                         }))
                     }
                 },
+                include: {
+                    members: {
+                        include: {
+                            user: {
+                                include: {
+                                    assignedTasks: true
+                                }
+                            }
+                        }
+                    }
+                }
             });
         }),
     updateTitle: protectedProcedure

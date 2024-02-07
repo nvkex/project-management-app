@@ -61,12 +61,15 @@ export const taskRouter = createTRPCRouter({
                 payload.priority = input.priority
 
             // Create task
-            const res = ctx.db.task.create({
+            const res = await ctx.db.task.create({
                 data: payload,
+                include: {
+                    assignee: true
+                }
             });
 
             // increment last task ID used 
-            const idIncrementRes = await ctx.db.project.update({
+            await ctx.db.project.update({
                 where: {
                     id: input.projectId
                 },
@@ -76,7 +79,6 @@ export const taskRouter = createTRPCRouter({
                     }
                 }
             })
-            console.log(idIncrementRes)
             return res;
         }),
     updateAssignee: protectedProcedure
@@ -102,7 +104,7 @@ export const taskRouter = createTRPCRouter({
             startDate: z.date().nullish(),
             endDate: z.date().nullish()
         }))
-        .mutation(({ ctx, input }) => {
+        .mutation(async ({ ctx, input }) => {
             const data: Prisma.TaskUpdateInput = {}
 
             if (input.priority)
@@ -120,7 +122,7 @@ export const taskRouter = createTRPCRouter({
             if (input.assigneeId)
                 data.assignee = { connect: { id: input.assigneeId } }
 
-            return ctx.db.task.update({
+            return await ctx.db.task.update({
                 where: {
                     id: input.taskId,
                     project: {
@@ -132,6 +134,9 @@ export const taskRouter = createTRPCRouter({
                     }
                 },
                 data: data,
+                include: {
+                    assignee: true
+                }
             });
         })
 })

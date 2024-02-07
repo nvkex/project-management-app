@@ -15,10 +15,10 @@ import { getArray, groupBy } from '~/utils/utilities';
 import { useSession } from 'next-auth/react';
 import Input from '~/components/atomic/input';
 import { Transition } from '@headlessui/react';
+import { notification } from '~/components/atomic/notification';
 
 // Type definitions
 type ProjectByIdOutput = RouterOutputs["project"]["getByAbbrv"];
-
 type ProjectMemberType = Prisma.ProjectsAndUsersGetPayload<{
     include: {
         user: {
@@ -28,13 +28,11 @@ type ProjectMemberType = Prisma.ProjectsAndUsersGetPayload<{
         }
     }
 }>
-
 type ProjectTaskType = Prisma.TaskGetPayload<{
     include: {
         assignee: true
     }
 }>
-
 type MembersTableProps = {
     members: Array<ProjectMemberType>
 }
@@ -43,7 +41,6 @@ type TasksTableProps = {
     keyColumn: "status" | "priority",
     label: string
 }
-
 type GroupedTaskItemByStatus = {
     "status"?: string,
     "priority"?: string,
@@ -76,9 +73,9 @@ const GroupedTaskTable: FunctionComponent<TasksTableProps> = ({ tasks = [], keyC
 }
 
 function ProjectDetails(props: { project: ProjectByIdOutput, loading: boolean }) {
-    const { project } = props;
 
     const [showAddMemberDialog, setShowAddMemberDialog] = useState(false)
+    const [project, setProject] = useState<ProjectByIdOutput>(props.project)
     const [title, setTitle] = useState(project?.title)
 
     const { data: sessionData } = useSession();
@@ -88,13 +85,28 @@ function ProjectDetails(props: { project: ProjectByIdOutput, loading: boolean })
 
     const hasProjectTitleChanged = (project && project.title !== title) ?? false
 
-    const onProjectTitleChange = () => {
+    // --------------------------Event Handlers--------------------------
+    const onProjectTitleChange = async () => {
         if (!project) return
         if (!title || title.length == 0) {
             alert("Invalid title")
             return
         }
-        mutation.mutate({ title, projectId: project.id })
+        try {
+            const res = await mutation.mutateAsync({ title, projectId: project.id })
+            if (res?.title) {
+                project.title = res.title
+                setProject(project)
+                notification("Title updated.", "success", "title-update-msg")
+            }
+        }
+        catch (e) {
+            notification("Update failed! Please try again.", "error", "title-update-failure-msg")
+        }
+    }
+
+    const onMemberUpdate = () => {
+        notification("Members added!", "success", "member-add-msg")
     }
 
     return (
@@ -112,7 +124,7 @@ function ProjectDetails(props: { project: ProjectByIdOutput, loading: boolean })
                             leaveFrom="opacity-100"
                             leaveTo="opacity-0"
                         >
-                            <Button onClick={onProjectTitleChange}>Save</Button>
+                            <div className='flex h-full'><Button onClick={onProjectTitleChange}>Save</Button></div>
                         </Transition>
                     </div>
 
@@ -155,7 +167,7 @@ function ProjectDetails(props: { project: ProjectByIdOutput, loading: boolean })
                     </div>
                 </div>
             </div>
-            <AddMember projectId={project?.id} setIsOpen={setShowAddMemberDialog} isOpen={showAddMemberDialog} />
+            <AddMember projectId={project?.id} setIsOpen={setShowAddMemberDialog} isOpen={showAddMemberDialog} onSuccess={onMemberUpdate} />
         </>
     );
 }

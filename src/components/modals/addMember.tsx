@@ -1,18 +1,23 @@
 import { type FunctionComponent, useEffect, useState } from "react";
+import { type Prisma } from "@prisma/client";
+
 import Button from "../atomic/button";
 import { api } from "~/utils/api";
 import CustomModal from "./customModal";
 import Dropdown, { type DropdownOptionsType } from "../derived/dropdown";
 import { UserWithAvatar } from "../atomic/userAvatar";
+import { notification } from "../atomic/notification";
+
+type ProjectType = Prisma.ProjectGetPayload<object>
 
 type AddMemberProps = {
   projectId?: string;
-  onSuccess?: () => void;
+  onSuccess?: (data: ProjectType) => void;
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
 };
 
-const AddMember: FunctionComponent<AddMemberProps> = ({ projectId = '', isOpen, setIsOpen, onSuccess = () => null }) => {
+const AddMember: FunctionComponent<AddMemberProps> = ({ projectId = '', isOpen, setIsOpen, onSuccess = null }) => {
   const [addedUserIds, setAddedUserIds] = useState<DropdownOptionsType[]>([]);
   const [userIdSet, setUserIdSet] = useState<Set<string>>(new Set());
 
@@ -37,13 +42,16 @@ const AddMember: FunctionComponent<AddMemberProps> = ({ projectId = '', isOpen, 
     setAddedUserIds(t => [...t, ...uniqUsers]);
   };
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     try {
-      mutation.mutate({ projectId, userIds: addedUserIds.map(user => user.value) });
+      notification("Adding...", "info", "member-adding-msg")
+      const res = await mutation.mutateAsync({ projectId, userIds: addedUserIds.map(user => user.value) });
+      if (!res)
+        notification("Failed to add members! Please try again.", "error", "member-add-failure-msg")
       hideDialog();
-      onSuccess && onSuccess();
+      onSuccess && onSuccess(res);
     } catch (e) {
-      alert("Failed to add members");
+      notification("Failed to add members! Please try again.", "error", "member-add-failure-msg")
       console.log(e);
     }
   };
