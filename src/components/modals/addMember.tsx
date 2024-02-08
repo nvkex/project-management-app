@@ -45,9 +45,12 @@ const AddMember: FunctionComponent<AddMemberProps> = ({ projectId = '', isOpen, 
   const onSubmit = async () => {
     try {
       notification("Adding...", "info", "member-adding-msg")
-      const res = await mutation.mutateAsync({ projectId, userIds: addedUserIds.map(user => user.value) });
-      if (!res)
-        notification("Failed to add members! Please try again.", "error", "member-add-failure-msg")
+      const res = await mutation.mutateAsync({ projectId, userIds: addedUserIds.map(user => user.value) }, {
+        onError: (error) => {
+          notification("Failed to add members! Please try again.", "error", "member-add-failure-msg")
+          console.log(error)
+        }
+      });
       hideDialog();
       onSuccess && onSuccess(res);
     } catch (e) {

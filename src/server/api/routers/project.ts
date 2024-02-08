@@ -64,6 +64,10 @@ export const projectRouter = createTRPCRouter({
                         ]
                     }
                 },
+                include: {
+                    members: true,
+                    lead: true
+                }
             });
         }),
     getMembers: protectedProcedure

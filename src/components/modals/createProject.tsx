@@ -1,33 +1,42 @@
 import { type FunctionComponent, useEffect, useState } from "react";
 import Button from "../atomic/button";
 import Input from "../atomic/input";
-import { api } from "~/utils/api";
+import { type RouterOutputs, api } from "~/utils/api";
 import CustomModal from "./customModal";
 import TextArea from "../atomic/textArea";
+import { notification } from "../atomic/notification";
+
+type CreateUserResponse = RouterOutputs["project"]["create"];
 
 type CreateProjectProps = {
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
-  onSuccess?: () => void;
+  onSuccess?: (data: CreateUserResponse) => void;
 };
 
-const CreateProject: FunctionComponent<CreateProjectProps> = ({ isOpen, setIsOpen, onSuccess = () => null }) => {
+const CreateProject: FunctionComponent<CreateProjectProps> = ({ isOpen, setIsOpen, onSuccess = null }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [abbreviation, setAbbreviation] = useState('');
   const mutation = api.project.create.useMutation();
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     const formData = {
       title,
       description,
       abbreviation,
     };
     try {
-      mutation.mutate(formData);
-      onSuccess && onSuccess();
+      const res = await mutation.mutateAsync(formData, {
+        onError: (error) => {
+          notification("Failed to create project! Please try again.", "error", "project-create-failure-msg")
+          console.log(error)
+        }
+      });
+      onSuccess && onSuccess(res);
+      setIsOpen(false)
     } catch (e) {
-      alert("Error!");
+      notification("Failed to create project! Please try again.", "error", "project-create-failure-msg")
       console.error(e);
     }
   };

@@ -53,7 +53,7 @@ const UpdateTask: FunctionComponent<UpdateTaskProps> = ({ task, project, isOpen,
   // Function to handle form submission
   const onSubmit = async () => {
     if (!project ?? !task) return;
-    
+
     notification("Updating...", "info", "task-updating-msg")
     setLoading(true)
 
@@ -83,9 +83,12 @@ const UpdateTask: FunctionComponent<UpdateTaskProps> = ({ task, project, isOpen,
 
     try {
       // Call the mutation to update task properties
-      const res = await mutation.mutateAsync(payload);
-      if (!res)
-        notification("Failed to update task! Please try again.", "error", "task-update-failure-msg")
+      const res = await mutation.mutateAsync(payload, {
+        onError: (error) => {
+          notification("Failed to update task! Please try again.", "error", "task-update-failure-msg")
+          console.log(error)
+        }
+      });
       // Close the modal
       setIsOpen && setIsOpen(false);
       // Trigger success callback if provided

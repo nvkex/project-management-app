@@ -12,6 +12,7 @@ import { priorityBadgeVariantConfig } from '~/utils/priorityConstants';
 import { STATUS_ENUM, statusBadgeVariantConfig } from '~/utils/statusConstants';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
+import { notification } from './atomic/notification';
 
 // Type definitions
 type UserDetailsOutput = RouterOutputs["user"]["getDetailedUserData"];
@@ -62,11 +63,17 @@ function UserPreferences(props: { data: UserDetailsOutput, blockEdit?: boolean }
             name, department, organization, location, shade
         }
         try {
-            mutation.mutate(payload)
-            setHasValuesChanged(false)
+            const res = await mutation.mutateAsync(payload, {
+                onError: (error) => {
+                    console.log(error)
+                    notification("Update failed! Please try again.", "error", "user-p-update-failure-msg")
+                },
+            })
+            if (res)
+                setHasValuesChanged(false)
         }
         catch (e) {
-            alert("Error!")
+            notification("Update failed! Please try again.", "error", "user-p-update-failure-msg")
             console.log(e)
         }
     }

@@ -58,9 +58,12 @@ const AddTask: FunctionComponent<AddTaskProps> = ({ project, isOpen, setIsOpen, 
     };
 
     try {
-      const res = await mutation.mutateAsync(payload);
-      if (!res)
-        notification("Failed to create task! Please try again.", "error", "task-create-failure-msg")
+      const res = await mutation.mutateAsync(payload, {
+        onError: (error) => {
+          notification("Failed to create task! Please try again.", "error", "task-create-failure-msg")
+          console.log(error)
+        }
+      });
       onSuccess && onSuccess(res);
       setIsOpen && setIsOpen(false);
     }

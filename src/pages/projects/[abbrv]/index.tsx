@@ -89,7 +89,7 @@ function ProjectDetails(props: { project: ProjectByIdOutput, loading: boolean })
     const onProjectTitleChange = async () => {
         if (!project) return
         if (!title || title.length == 0) {
-            alert("Invalid title")
+            notification("Invalid title.", "error", "title-error-msg")
             return
         }
         try {

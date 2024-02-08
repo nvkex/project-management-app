@@ -11,6 +11,7 @@ import BaseLayout from "~/layout/base";
 import { api } from "~/utils/api";
 import { UserWithAvatar } from "~/components/atomic/userAvatar";
 import CreateProject from "~/components/modals/createProject";
+import { notification } from "~/components/atomic/notification";
 
 type ProjectItem = Prisma.ProjectGetPayload<{
     include: {
@@ -28,8 +29,9 @@ export default function Projects() {
     const [filterText, setFilterText] = useState('')
     const [isCreateProjectDialogOpen, setIsCreateProjectDialogOpen] = useState(false)
 
-    const onTaskCreationSuccess = () => {
-        window.location.reload()
+    const onProjectCreationSuccess = (projectData: ProjectItem) => {
+        data.push(projectData)
+        notification("Project created", "success", "project-create-msg")
     }
 
     const leadCell = (name: string, userId: string, shade: string) => {
@@ -66,7 +68,7 @@ export default function Projects() {
             <link rel="icon" href="/favicon.ico" />
         </Head>
         <BaseLayout apiDependency={getQuery}>
-            <CreateProject isOpen={isCreateProjectDialogOpen} setIsOpen={setIsCreateProjectDialogOpen} onSuccess={onTaskCreationSuccess} />
+            <CreateProject isOpen={isCreateProjectDialogOpen} setIsOpen={setIsCreateProjectDialogOpen} onSuccess={onProjectCreationSuccess} />
             <div className="flex justify-between align-middle">
                 <PageHead>Projects</PageHead>
                 <Button variant="primary" onClick={() => setIsCreateProjectDialogOpen(true)}>Create Project</Button>

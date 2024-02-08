@@ -3,6 +3,7 @@ import Button from "../atomic/button";
 import Input from "../atomic/input";
 import { type RouterInputs, api } from "~/utils/api";
 import CustomModal from "./customModal";
+import { notification } from "../atomic/notification";
 
 type CreateUserPayload = RouterInputs["user"]["create"];
 
@@ -30,29 +31,33 @@ const RegisterUser: FunctionComponent<RegisterUserProps> = ({ isOpen, setIsOpen,
   };
 
   // Function to handle form submission
-  const onSubmit = () => {
+  const onSubmit = async () => {
     // Check if all fields are filled
     if (!name || !email || !password) {
       alert("All fields are required!");
       return;
     }
 
-    if (password !== confirmPassword){
-      alert("Password and Confirm Password should match!")
+    if (password !== confirmPassword) {
+      notification("Password and Confirm Password should match.", "error", "user-pass-failure-msg")
       return
     }
 
-      // Prepare payload for creating a new user
-      const payload: CreateUserPayload = {
-        name,
-        email,
-        password,
-      };
+    // Prepare payload for creating a new user
+    const payload: CreateUserPayload = {
+      name,
+      email,
+      password,
+    };
 
     try {
       // Call the mutation to create a new user
-      mutation.mutate(payload);
-
+      await mutation.mutateAsync(payload, {
+        onError: (error) => {
+          console.log(error)
+          notification("Failed to register! Please try again.", "error", "user-create-failure-msg")
+        }
+      });
       // Close the modal
       setIsOpen && setIsOpen(false);
 
@@ -60,7 +65,7 @@ const RegisterUser: FunctionComponent<RegisterUserProps> = ({ isOpen, setIsOpen,
       onSuccess && onSuccess();
     } catch (e) {
       // Handle errors
-      alert("Error");
+      notification("Failed to register! Please try again.", "error", "user-create-failure-msg")
       console.log(e);
     }
   };

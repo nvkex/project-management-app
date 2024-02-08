@@ -9,10 +9,12 @@ import { api } from '~/utils/api';
 const ProfileEditPage = () => {
     const userId = useRouter().query.userId as string;
     const { data: sessionData } = useSession();
+    const router = useRouter()
 
-    if(sessionData?.user.id == userId && typeof window !== "undefined")
-        window.location.href = "/profile"
-    
+    if (sessionData?.user.id == userId && typeof window !== "undefined") {
+        void router.push('/profile')
+    }
+
     const postQuery = api.user.getUserProfile.useQuery({ userId });
 
     const { data } = postQuery;
